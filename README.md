@@ -334,10 +334,15 @@ is still and the vacuum reading is at least 400 (a substrate is held),
 counts down 3 s, then drives the step. It stops the spindle (speed 0,
 run off, vacuum kept on) when the step ends or as soon as:
 
-- any key changes the keypad frame,
+- a key changes the keypad frame (START/STOP and VACUUM do),
 - the keypad or the mainboard sends nothing for 0.5 s,
-- the vacuum reading falls below the limit,
+- the vacuum reading falls below `--min-vacuum` (default 400),
 - the operator presses Ctrl+C.
+
+`--start-vacuum` sets the reading needed to start, if it should be
+higher than the stop limit. After a run, the bridge holds the spindle
+at 0 rpm until the keypad is idle, so a keypad recipe started during
+the run does not take over.
 
 Mainboard frames keep reaching the keypad during a run, but the keypad
 does not know the PC is running, so its LCD stays on STANDBY with
@@ -351,6 +356,11 @@ Bench results on 2026-11-17 (logs in
 | `forward`, 30 s, STANDBY | 394 frames each way, 0 bad; LCD normal |
 | `forward`, keypad runs 1234 rpm, ACL 5 s, 5 s | Ramp 4.91 s, hold 1230-1234 rpm, stop 0.41 s; same as without the PC |
 | `run --rpm 2100 --accel 5 --hold 10` | Command at 2100 rpm after 4.94 s; measured 2098 rpm mean (2097-2099) for 9.96 s; 0 rpm 0.49 s after the step; vacuum 640-645; 0 bad frames |
+| Abort: START/STOP pressed at 500 rpm | Stop frame in the same poll; 493 to 31 rpm in 0.25 s; spindle held at 0 rpm while the keypad's own recipe ran |
+| Abort: keypad-side DB9 pulled at 500 rpm | Detected 0.50 s after the last frame; 0 rpm 0.30 s later |
+| Abort: vacuum below the limit (`--min-vacuum 643`) | Stopped in the same poll as a 642 reading (194 rpm) |
+| Abort: mainboard-side DB9 pulled at 300 rpm | Detected after 0.5 s; the mainboard stopped the spindle by itself, vacuum held |
+| PC down: bridge killed at 300 rpm | Mainboard stopped the spindle by itself, vacuum held |
 
 With the PC forwarding, the keypad polls about 14 times a second
 instead of 19, because each reply takes about 42 ms through the PC.
@@ -462,8 +472,8 @@ lid, and keep the e-stop in reach. Start the command, then press
 **VACUUM** (only VACUUM) on the keypad. The PC waits up to 60 s for
 the vacuum to hold a substrate, counts down 3 s, ramps to 2100 rpm in
 5 s, holds 10 s, and stops. A key press, a silent link or a vacuum
-drop during the run stops the spindle; these stops are proven in the
-simulated tests but have not yet been tried on the machine.
+drop during the run stops the spindle; each of these was tried on the
+machine (see the abort tests below).
 
 ```console
 $ python3 -m spincoater_midas.bridge --keypad-port $K --mainboard-port $M \
@@ -513,15 +523,20 @@ MainboardStatus(vacuum_reading=643, speed_rpm=1993, tail='0000')
   help from the link, and find out what the mainboard does when frames
   stop arriving.
 - **In setup B the panel is dead whenever the bridge is not running.**
-  The mainboard then keeps its last command: after a run it held the
-  vacuum on until the PC sent a vacuum-off frame. Leave `forward`
-  running whenever the operator should use the keypad.
+  The mainboard stops the spindle by itself when frames stop, but keeps
+  the vacuum on until a frame says otherwise. Leave `forward` running
+  whenever the operator should use the keypad.
+- **START and STOP are one key.** Pressing it during a PC run starts the
+  keypad's own recipe. The bridge stops the PC run and then holds the
+  spindle at 0 rpm until the keypad's recipe ends; it never hands the
+  spindle to a recipe it did not see start.
 
 ## Open questions
 
-- What does the mainboard do when the keypad's frames stop mid-run?
-  With the spindle stopped it holds the last command (vacuum stayed
-  on); a stop mid-run is still untested.
+- How long does the mainboard wait before it stops the spindle when
+  frames stop? It does stop by itself and keeps the vacuum (bench,
+  2026-11-17), but it sends nothing meanwhile, so the delay is not
+  measured.
 - Meaning of the keypad's constant `210` and of the always-zero fields.
 - Why the LCD showed `Act 0246rpm` while the speed was about 1232 rpm.
 - White to SP3232 pin 13 was not traced by continuity (it was inferred
@@ -552,5 +567,5 @@ MainboardStatus(vacuum_reading=643, speed_rpm=1993, tail='0000')
 | [claude_test/README.md](claude_test/README.md) | Index of capture tools and sessions |
 | [ToDo.md](ToDo.md) | Task history |
 
-Related project: the same approach on a Laurell spin coater,
+Related project: the similar approach on a Laurell spin coater,
 [SpinCoaterAutomationLaurell](https://github.com/coport-uni/SpinCoaterAutomationLaurell).

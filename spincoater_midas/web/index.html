@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spin Process Controller</title>
+<style>
+  /* The panel copies the SPIN-1200D front panel (docs/front_panel_buttons.jpg):
+     light-blue face, 20x4 blue LCD top left, arrow keys bottom left, and a
+     2 x 3 block of round keys on the right. Its colors stay the same in
+     dark mode because they stand for the machine. */
+  :root {
+    --page: #e9edf2;
+    --ink: #11161d;
+    --muted: #5b6573;
+    --card: #ffffff;
+    --line: #d3dae3;
+    --good: #2f7d55;
+    --bad: #b3261e;
+    --face: #9cc4ec;
+    --face-edge: #7fa9d6;
+    --steel: #c9ced4;
+    --key: #1747a6;
+    --key-ring: #e9f1ff;
+    --lcd: #2c5fe0;
+    --lcd-ink: #eef4ff;
+    --bezel: #101317;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page: #10141a;
+      --ink: #e6ebf1;
+      --muted: #9aa5b4;
+      --card: #18202a;
+      --line: #2b3542;
+      --good: #5cc28c;
+      --bad: #ff7a70;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  .machine {
+    background: linear-gradient(#d9dde2, var(--steel));
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  }
+  .face {
+    background: var(--face);
+    border: 2px solid var(--face-edge);
+    border-radius: 6px;
+    padding: 18px 22px 22px;
+    color: #0d1b33;
+  }
+  .face-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .model { font: 700 14px/1 system-ui, sans-serif; letter-spacing: 0.08em; }
+  .title {
+    font: 700 19px/1 Georgia, "Times New Roman", serif;
+    letter-spacing: 0.02em;
+  }
+  .face-body {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    gap: 22px 64px;
+    align-items: start;
+  }
+  .left { display: grid; gap: 24px; justify-items: start; min-width: 0; }
+
+  .bezel {
+    background: var(--bezel);
+    border-radius: 6px;
+    padding: 10px;
+    max-width: 100%;
+  }
+  .lcd {
+    background: var(--lcd);
+    color: var(--lcd-ink);
+    border-radius: 3px;
+    padding: 10px 12px;
+    font: 600 21px/1.35 "DejaVu Sans Mono", ui-monospace, monospace;
+    white-space: pre;
+    overflow-x: auto;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.35);
+  }
+  .lcd .cursor { text-decoration: underline; text-underline-offset: 3px; }
+
+  .key {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 3px solid var(--key-ring);
+    background: radial-gradient(circle at 35% 30%, #2f63c9, var(--key));
+    color: #fff;
+    font: 600 11px/1.1 Georgia, "Times New Roman", serif;
+    cursor: pointer;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+    display: grid;
+    place-items: center;
+    padding: 0;
+  }
+  .key small { display: block; font-size: 10px; }
+  .key:active { transform: translateY(1px); box-shadow: none; }
+  .key:disabled { opacity: 0.5; cursor: not-allowed; }
+  .key:focus-visible { outline: 3px solid #ffd54a; outline-offset: 2px; }
+
+  .arrows {
+    display: grid;
+    grid-template-columns: repeat(3, 56px);
+    grid-template-rows: 56px 56px;
+    gap: 4px 34px;
+    margin-left: 18px;
+  }
+  .arrows .key { width: 52px; height: 52px; font-size: 18px; }
+  #key-left { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
+  #key-up { grid-column: 2; grid-row: 1; }
+  #key-down { grid-column: 2; grid-row: 2; }
+  #key-right { grid-column: 3; grid-row: 1 / span 2; align-self: center; }
+
+  .keys {
+    display: grid;
+    grid-template-columns: 64px 64px;
+    gap: 34px 26px;
+    padding-top: 4px;
+  }
+
+  @media (max-width: 720px) {
+    .face-body { grid-template-columns: 1fr; justify-items: center; }
+    .left { justify-items: center; }
+    .keys { gap: 18px 26px; }
+    .lcd { font-size: 4.2vw; }
+    .arrows { margin-left: 0; gap: 4px 22px; }
+  }
+
+  .readout {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .tile, .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .tile .label { color: var(--muted); font-size: 13px; }
+  .tile .value {
+    font: 700 30px/1.2 "DejaVu Sans Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  .tile .unit { color: var(--muted); font-size: 13px; }
+  .status-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    align-items: center;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  .dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    background: var(--bad);
+  }
+  .dot.ok { background: var(--good); }
+  #message { margin: 0; flex: 1 1 260px; }
+  #message.error { color: var(--bad); }
+  .card { margin-top: 16px; }
+  .card h2 { font-size: 15px; margin: 0 0 10px; }
+  .recipe {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  @media (max-width: 520px) {
+    .readout, .recipe { grid-template-columns: 1fr; }
+  }
+  label { display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
+  input {
+    font: inherit;
+    color: var(--ink);
+    background: var(--page);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    width: 100%;
+  }
+  .note { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <div class="machine">
+    <div class="face">
+      <div class="face-top">
+        <span class="model">SPIN-1200D</span>
+        <span class="title">SPIN PROCESS CONTROLLER</span>
+      </div>
+      <div class="face-body">
+        <div class="left">
+          <div class="bezel">
+            <div class="lcd" id="lcd" aria-live="polite">Connecting...</div>
+          </div>
+          <div class="arrows" aria-label="Arrow keys">
+            <button class="key" id="key-left" type="button"
+                    aria-label="Left">&#9664;</button>
+            <button class="key" id="key-up" type="button"
+                    aria-label="Up">&#9650;</button>
+            <button class="key" id="key-down" type="button"
+                    aria-label="Down">&#9660;</button>
+            <button class="key" id="key-right" type="button"
+                    aria-label="Right">&#9654;</button>
+          </div>
+        </div>
+        <div class="keys" aria-label="Function keys">
+          <button class="key" id="start" type="button">START<br>STOP</button>
+          <button class="key" id="key-edit" type="button">EDIT</button>
+          <button class="key" id="key-vacuum" type="button">VACUUM</button>
+          <button class="key" id="key-enter" type="button">ENTER</button>
+          <button class="key" id="key-rcp" type="button">RCP SEL
+            <small>skip</small></button>
+          <button class="key" id="key-pause" type="button">PAUSE
+            <small>digit sel</small></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="readout" aria-label="Live values from the link">
+    <div class="tile">
+      <div class="label">Set (speed the PC or keypad commands)</div>
+      <div class="value" id="set-rpm">-</div>
+      <div class="unit">rpm</div>
+    </div>
+    <div class="tile">
+      <div class="label">Act (speed the mainboard measures)</div>
+      <div class="value" id="act-rpm">-</div>
+      <div class="unit">rpm</div>
+    </div>
+    <div class="tile">
+      <div class="label">Vac (vacuum reading)</div>
+      <div class="value" id="vacuum">-</div>
+      <div class="unit">reading</div>
+    </div>
+  </div>
+
+  <div class="status-row">
+    <span><span class="dot" id="link-keypad"></span>Keypad link</span>
+    <span><span class="dot" id="link-mainboard"></span>Mainboard link</span>
+    <p id="message"></p>
+  </div>
+
+  <section class="card" aria-label="Web recipe">
+    <h2>Web recipe (one step)</h2>
+    <div class="recipe">
+      <label>Speed (rpm)
+        <input id="rpm" type="number" min="1" step="1" value="2100">
+      </label>
+      <label>ACL, acceleration time (s)
+        <input id="accel" type="number" min="0.1" max="99.9" step="0.1"
+               value="5.0">
+      </label>
+      <label>Step time after ACL (s)
+        <input id="hold" type="number" min="0.1" max="999.9" step="0.1"
+               value="10.0">
+      </label>
+    </div>
+    <p class="note">The keys work like the machine's: START/STOP starts
+      this recipe (3 s countdown) or stops the run; EDIT, the arrows,
+      PAUSE (digit sel) and ENTER change the values on the LCD. VACUUM
+      must be switched on at the machine's own keypad, with a substrate
+      on the chuck. Any key on the machine, a lost cable or a vacuum drop
+      also stops a run.</p>
+  </section>
+</main>
+
+<script>
+  const poll_ms = 200;
+  const error_shown_ms = 5000;
+  const field = (id) => document.getElementById(id);
+
+  // Editable LCD fields, in the order Left/Right moves through them.
+  // Each value is a fixed-width digit string like the keypad shows.
+  const edit_fields = [
+    { id: "hold", width: 5, point: 3, line: 1, column: 4 },
+    { id: "rpm", width: 4, point: null, line: 1, column: 13 },
+    { id: "accel", width: 4, point: 2, line: 3, column: 3 },
+  ];
+  let editing = false;
+  let edit_index = 0;
+  let digit_index = 0;
+  let last_status = null;
+  let last_error = "";
+  let last_error_time = 0;
+
+  function pad(value, width) {
+    return String(value).padStart(width, "0");
+  }
+
+  function digits_of(spec) {
+    const value = Number(field(spec.id).value) || 0;
+    const scaled = spec.point === null ? Math.round(value)
+      : Math.round(value * 10);
+    return pad(Math.min(scaled, 10 ** (spec.width - (spec.point ? 1 : 0)) - 1),
+               spec.width - (spec.point === null ? 0 : 1));
+  }
+
+  function shown(spec) {
+    const raw = digits_of(spec);
+    return spec.point === null ? raw
+      : raw.slice(0, spec.point - 0) + "." + raw.slice(spec.point);
+  }
+
+  function state_word(s) {
+    if (editing) return "EDIT";
+    if (!s) return "-------";
+    if (s.state === "countdown") {
+      return "START " + Math.ceil(s.countdown_seconds || 0);
+    }
+    if (s.state === "running") return "RUN";
+    if (s.keypad && s.keypad.run) return "KEYPAD";
+    if (s.last_result && s.last_result.completed) return "END";
+    return "STANDBY";
+  }
+
+  function lcd_lines(s) {
+    const vacuum_on = s && s.keypad && s.keypad.vacuum ? "V" : " ";
+    const line1 = state_word(s).padEnd(8) + "Stp01/01 " + vacuum_on + " W";
+    const set_rpm = s && s.state === "running" && s.profile
+      ? pad(s.profile.rpm, 4) : digits_of(edit_fields[1]);
+    const line2 = "Set " + shown(edit_fields[0]) + "    " + set_rpm + "rpm";
+    let elapsed = "  0.0";
+    if (s && s.elapsed_seconds != null) {
+      elapsed = s.elapsed_seconds.toFixed(1).padStart(5);
+    }
+    const act = s && s.act_rpm != null ? String(s.act_rpm).padStart(4)
+      : "----";
+    const line3 = editing ? "Act" : "Act " + elapsed + "    " + act + "rpm";
+    const vac = s && s.vacuum_reading != null ? pad(s.vacuum_reading, 3)
+      : "---";
+    const line4 = "ACL" + shown(edit_fields[2]) + "sec  Vac -" + vac;
+    return [line1, line2, line3, line4];
+  }
+
+  function render_lcd(s) {
+    const lines = lcd_lines(s);
+    const box = field("lcd");
+    box.textContent = "";
+    lines.forEach((text, line) => {
+      let cursor = -1;
+      if (editing) {
+        const spec = edit_fields[edit_index];
+        if (spec.line === line) {
+          let offset = digit_index;
+          if (spec.point !== null && offset >= spec.point) offset += 1;
+          cursor = spec.column + offset;
+        }
+      }
+      if (cursor < 0) {
+        box.append(text);
+      } else {
+        box.append(text.slice(0, cursor));
+        const mark = document.createElement("span");
+        mark.className = "cursor";
+        mark.textContent = text[cursor];
+        box.append(mark, text.slice(cursor + 1));
+      }
+      if (line < lines.length - 1) box.append("\n");
+    });
+  }
+
+  function show_message(s) {
+    const box = field("message");
+    if (last_error && Date.now() - last_error_time > error_shown_ms) {
+      last_error = "";
+    }
+    if (last_error) {
+      box.textContent = last_error;
+      box.className = "error";
+      return;
+    }
+    box.className = "";
+    if (editing) {
+      box.textContent = "EDIT: Left/Right pick a value, PAUSE picks a "
+        + "digit, Up/Down change it, ENTER stores.";
+    } else if (s.state === "countdown") {
+      box.textContent = "Starting... press START/STOP to cancel.";
+    } else if (s.state === "running") {
+      box.textContent = "Running a " + s.profile.rpm + " rpm step.";
+    } else if (s.ready_problem) {
+      box.textContent = "Not ready: " + s.ready_problem;
+    } else if (s.last_result) {
+      box.textContent = "Last run: " + s.last_result.reason
+        + " (peak " + s.last_result.peak_measured_rpm + " rpm).";
+    } else {
+      box.textContent = "Ready.";
+    }
+  }
+
+  function render(s) {
+    last_status = s;
+    render_lcd(s);
+    field("set-rpm").textContent = s.set_rpm == null ? "-" : s.set_rpm;
+    field("act-rpm").textContent = s.act_rpm == null ? "-" : s.act_rpm;
+    field("vacuum").textContent =
+      s.vacuum_reading == null ? "-" : s.vacuum_reading;
+    field("link-keypad").classList.toggle("ok", s.links.keypad);
+    field("link-mainboard").classList.toggle("ok", s.links.mainboard);
+    field("rpm").max = s.limits.max_rpm;
+    const busy = s.state !== "forwarding";
+    field("start").disabled = !busy && (editing || Boolean(s.ready_problem));
+    field("start").dataset.action = busy ? "stop" : "start";
+    field("key-edit").disabled = busy;
+    show_message(s);
+  }
+
+  async function refresh() {
+    try {
+      const response = await fetch("/api/status");
+      render(await response.json());
+    } catch (error) {
+      field("lcd").textContent = "No connection to\nthe server.";
+    }
+  }
+
+  function refuse(text) {
+    last_error = text;
+    last_error_time = Date.now();
+    if (last_status) show_message(last_status);
+  }
+
+  async function post(path, body) {
+    const response = await fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      const detail = Array.isArray(data.detail)
+        ? data.detail.map((d) => d.msg).join("; ") : data.detail;
+      refuse("Refused: " + detail);
+    } else {
+      last_error = "";
+    }
+    await refresh();
+  }
+
+  function start_or_stop() {
+    if (field("start").dataset.action === "stop") {
+      post("/api/stop");
+    } else {
+      post("/api/run", {
+        rpm: Number(field("rpm").value),
+        accel: Number(field("accel").value),
+        hold: Number(field("hold").value),
+      });
+    }
+  }
+
+  function step_digit(direction) {
+    const spec = edit_fields[edit_index];
+    const raw = digits_of(spec).split("").map(Number);
+    raw[digit_index] = (raw[digit_index] + direction + 10) % 10;
+    const joined = Number(raw.join(""));
+    field(spec.id).value = spec.point === null ? joined
+      : (joined / 10).toFixed(1);
+    render_lcd(last_status);
+  }
+
+  function digit_count(spec) {
+    return spec.width - (spec.point === null ? 0 : 1);
+  }
+
+  field("start").addEventListener("click", start_or_stop);
+  field("key-edit").addEventListener("click", () => {
+    editing = !editing;
+    edit_index = 0;
+    digit_index = 0;
+    if (last_status) render(last_status);
+  });
+  field("key-enter").addEventListener("click", () => {
+    editing = false;
+    if (last_status) render(last_status);
+  });
+  field("key-pause").addEventListener("click", () => {
+    if (!editing) return refuse("PAUSE (digit sel) works in EDIT mode.");
+    digit_index = (digit_index + 1) % digit_count(edit_fields[edit_index]);
+    render_lcd(last_status);
+  });
+  field("key-left").addEventListener("click", () => {
+    if (!editing) return;
+    edit_index = (edit_index + edit_fields.length - 1) % edit_fields.length;
+    digit_index = 0;
+    render_lcd(last_status);
+  });
+  field("key-right").addEventListener("click", () => {
+    if (!editing) return;
+    edit_index = (edit_index + 1) % edit_fields.length;
+    digit_index = 0;
+    render_lcd(last_status);
+  });
+  field("key-up").addEventListener("click", () => editing && step_digit(1));
+  field("key-down").addEventListener("click", () => editing && step_digit(-1));
+  field("key-vacuum").addEventListener("click", () => refuse(
+    "VACUUM: switch it on at the machine's keypad. The PC never "
+    + "switches the vacuum, so a person checks the substrate first."));
+  field("key-rcp").addEventListener("click", () => refuse(
+    "RCP SEL: the web page has one recipe (W), set below or with EDIT."));
+  ["rpm", "accel", "hold"].forEach((id) => field(id).addEventListener(
+    "input", () => last_status && render_lcd(last_status)));
+
+  refresh();
+  setInterval(refresh, poll_ms);
+</script>
+</body>
+</html>

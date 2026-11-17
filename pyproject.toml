@@ -3,7 +3,16 @@ name = "spincoater-midas"
 version = "0.1.0"
 description = "Host-side control of a Midas SPIN-1200D spin coater over JP4"
 requires-python = ">=3.12"
-dependencies = ["pyserial>=3.5"]
+dependencies = ["pyserial>=3.5", "fastapi>=0.110", "uvicorn>=0.29"]
+
+[project.optional-dependencies]
+test = ["pytest", "httpx", "ruff==0.15.9"]
+
+[tool.setuptools]
+packages = ["spincoater_midas"]
+
+[tool.setuptools.package-data]
+spincoater_midas = ["web/*.html"]
 
 [tool.ruff]
 line-length = 80

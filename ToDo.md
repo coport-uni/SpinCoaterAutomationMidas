@@ -323,7 +323,80 @@ the code for wiring B. Test scenario for B: reach 2100 rpm in 5 s
 (ACL 5.0 s) and hold 2100 rpm for 10 s.
 
 ### Tasks
-- [ ] Commit on `feature/jp4-protocol-parser`, push, open PR, merge
-- [ ] New branch for the bridge; write the forward/override program
-- [ ] Bench test with the operator: forwarding only, then the 2100 rpm
+- [x] Commit on `feature/jp4-protocol-parser`, push, open PR, merge
+      (PR #3, merged 2026-11-17)
+- [x] New branch for the bridge; write the forward/override program
+- [x] GitHub issue for the bridge work (#4)
+- [x] Bench test with the operator: forwarding only, then the 2100 rpm
       scenario
+
+### Notes
+- Bridge code (`spincoater_midas/bridge.py`, `profile.py`) and 10 tests
+  with simulated boards; 25 tests pass. A mutation check (each abort
+  disabled in turn, then the stop frame) made the suite fail every
+  time.
+- Not committed yet: device code must run on the machine first
+  (CommonClaude section 5.1).
+- Both cables enumerate: `...AUCGb144J08...` = ttyUSB0,
+  `...BHCWb144J08...` = ttyUSB1. Which faces which board is decided by
+  `bridge identify` once the wiring is done.
+
+## Check wiring B
+
+### Tasks
+- [x] `bridge identify`: BHCW (ttyUSB1) hears keypad frames = keypad
+      side, as the user said; AUCG (ttyUSB0) silent
+- [x] Keypad frames clean (0 bad); LCD on STANDBY, so Red/Black pass
+- [x] Found: keypad polls; with no reply it retries every ~2.1 s, and
+      the mainboard stays silent (recorded in `docs/jp4_protocol.md`)
+- [x] Verify the transmit paths with a short `forward` run (needs the
+      operator's go-ahead; STANDBY frames only)
+
+## Bench step 1: keypad run through the bridge
+
+### Background
+User request (2026-11-17): "1번 해보자". Forward for 150 s while the
+operator turns VACUUM on and starts a low-rpm one-step recipe from the
+keypad. The host only forwards; all motion is started by the operator.
+Issue #4.
+
+### Tasks
+- [x] Start `bridge forward --seconds 150` with webcam recording
+      (`claude_test/rs232_probe/sessions/20261117_103447_bridge_forward_keypad_run/`)
+- [x] Analyse the log: frame counts, bad frames, poll rate, commanded
+      vs measured speed, vacuum (0 bad; 1234 rpm reached at 4.91 s,
+      hold mean 1231.6 rpm; stop 0.41 s; poll 13.5/s while running)
+- [x] Check the LCD in the video; record results in docs and issue #4
+      (`lcd_sequence.jpg`: STANDBY Vac -634, RUN Act 1234 rpm, END)
+
+## Bench step 2: 2100 rpm scenario driven by the PC
+
+### Background
+User request (2026-11-17): "완료되는대로 2단계도 해보자". Run
+`bridge run --rpm 2100 --accel 5 --hold 10 --yes` with a wafer on the
+chuck, the operator at the machine with the e-stop. The bridge waits
+up to 60 s for the operator to turn VACUUM on (vacuum >= 400), counts
+down 3 s, runs, stops, then forwards 2 s. Issue #4.
+
+### Tasks
+- [x] Start the run with log and webcam recording
+- [x] Analyse: ramp time, hold speed, stop, aborts, LCD
+- [x] Record results in docs, claude_test README and issue #4
+- [x] User request "진공펌프를 꺼줄래?": with the bridge stopped the
+      keypad cannot reach the mainboard, so the host sent vacuum-off
+      frames for 3 s; vacuum 643 to 0, speed 0 (`vacuum_off.csv`)
+
+## Commit the bridge, PR, and a README terminal walkthrough
+
+### Background
+User request (2026-11-17): "그렇게해줘 Readme에도 이 레포를 터미널에서
+어떻게 다루는지 example 세션을 만들어줘." Commit the bench-verified
+bridge, push, open a PR with the bench output; add an example terminal
+session to the README built from real command output. Issue #4.
+
+### Tasks
+- [x] README: example terminal session (setup, tests, identify,
+      listen, forward, run) with real output
+- [x] ruff and pytest on the final tree
+- [ ] Commit on `feature/jp4-bridge`, push, open PR (Testing = bench
+      output); merge only when the user asks

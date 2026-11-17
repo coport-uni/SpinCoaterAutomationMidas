@@ -432,7 +432,7 @@ operator at the e-stop, log + webcam for each.
 - [x] T4b PC down: kill -9 the bridge mid-run at 300 rpm; after 5 s
       `forward` resumes, and its first reply shows whether the spindle
       kept turning (user chose both T4a and T4b)
-- [ ] Put the results in PR #5's Testing section; merge; delete branch
+- [x] Put the results in PR #5's Testing section; merge; delete branch
 
 ### Part 2: web control over a REST API (new issue, branch
 `feature/web-control`)
@@ -491,3 +491,6 @@ operator at the e-stop, log + webcam for each.
     on re-plug the mainboard read 0 rpm, vacuum 648. Operator: "잘
     멈추네". Like T4b, the mainboard stops the spindle by itself when
     frames stop and keeps the vacuum.
+  - 11:30 final `run --rpm 2100 --accel 5 --hold 10` on the final code:
+    2100 rpm command at 4.94 s, held 2093-2099 rpm for 9.96 s, 0 rpm
+    0.43 s after the step, 0 bad frames. Pass.

@@ -12,7 +12,7 @@ Run it with::
 
     python3 -m spincoater_midas.server --keypad-port K --mainboard-port M
 
-then open ``http://<host>:8000/`` in a browser.
+then open ``http://127.0.0.1:8000/`` in a browser on the same PC.
 """
 
 import argparse
@@ -28,7 +28,12 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from spincoater_midas import bridge as bridge_module
-from spincoater_midas.bridge import Bridge, RunResult, open_port
+from spincoater_midas.bridge import (
+    Bridge,
+    PortBusyError,
+    RunResult,
+    open_port,
+)
 from spincoater_midas.profile import StepProfile
 
 # Highest speed run on this machine so far (2100 rpm, 2026-11-17).
@@ -298,8 +303,9 @@ def main() -> None:
     parser.add_argument("--log", help="CSV file for every frame and event")
     parser.add_argument(
         "--host",
-        default="0.0.0.0",
-        help="address to listen on (default: all, for the local network)",
+        default="127.0.0.1",
+        help="address to listen on (default: this PC only; 0.0.0.0 opens "
+        "it to the network, which has not been tested)",
     )
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--max-rpm", type=int, default=default_max_rpm)
@@ -319,9 +325,11 @@ def main() -> None:
         log.writerow(
             [f"{time.monotonic():.3f}", "wall_clock", datetime.datetime.now()]
         )
-    bridge = Bridge(
-        open_port(args.keypad_port), open_port(args.mainboard_port), log=log
-    )
+    try:
+        ports = open_port(args.keypad_port), open_port(args.mainboard_port)
+    except PortBusyError as error:
+        parser.exit(1, f"error: {error}\n")
+    bridge = Bridge(*ports, log=log)
     settings = Settings(args.max_rpm, args.min_vacuum, start_vacuum)
     controller = Controller(bridge, settings)
     controller.start()

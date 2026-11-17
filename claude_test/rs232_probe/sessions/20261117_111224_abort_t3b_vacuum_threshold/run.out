@@ -1,0 +1,5 @@
+not ready: no frames from the keypad
+starting in 3 s (Ctrl+C to cancel)
+starting in 2 s (Ctrl+C to cancel)
+cancelled: vacuum reading 642 is below 643 (is a substrate on the chuck?)
+bad frames: 0; last mainboard status: MainboardStatus(vacuum_reading=642, speed_rpm=0, tail='0000')

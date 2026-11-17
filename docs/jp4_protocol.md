@@ -83,6 +83,65 @@ C | 210 | 2D40 -> 0x04D2 = 1234 rpm | 3 = vacuum + run | 000 | 73
 
 `sum(b"C2102D403000") % 256 == 0x73` (the 11 digits plus `C`).
 
+## Who talks first: the keypad polls
+
+With wiring B in place and the bridge not running (Blue and White cut,
+nothing forwarded; 2026-11-17, 10:3x), the keypad-side cable received a
+keypad frame only every 2.07-2.12 s (frame starts at 1.614, 3.731,
+5.850, 7.915, 10.033 s), and the mainboard-side cable received no bytes
+at all. The keypad LCD stayed on STANDBY.
+
+Before the cut, both sides sent about 19 frames per second. So the
+keypad sends a frame, waits for the mainboard's reply, and retries
+about every 2.1 s when none comes; the mainboard appears to speak only
+in reply to a keypad frame.
+
+With the bridge forwarding (`bridge forward --seconds 30`, 10:30:54 to
+10:31:24), each side sent and received 394 frames with 0 bad
+checksums, and the LCD stayed on STANDBY with no error. The poll rate
+fell from about 19.2 to 14.0 frames per second (gap median 72 ms, max
+73 ms): the mainboard's reply reached the keypad 42 ms (median, max
+43 ms) after the keypad's frame reached the host, which adds the
+host's read-and-resend time to every poll cycle. Evidence:
+`claude_test/rs232_probe/sessions/20261117_103053_bridge_forward_first/`.
+
+A keypad-started run through the bridge (1234 rpm, ACL 5 s, step 5 s;
+10:35:17) behaved as with the direct link: the command reached
+1234 rpm 4.91 s after START, the measured speed held at 1230-1234 rpm,
+and the spindle read 0 rpm 0.41 s after the last run frame. During the
+run the poll rate was 13.5 frames per second, so the keypad ramp is
+timed by the clock, not by the number of frames. Evidence:
+`claude_test/rs232_probe/sessions/20261117_103447_bridge_forward_keypad_run/`.
+
+The mainboard accepts frames built by the host. With
+`bridge run --rpm 2100 --accel 5 --hold 10` (run start 10:40:31.6),
+the host sent a frame every 52 ms (max gap 54 ms) and the mainboard
+replied to each; its measured speed trailed the ramp by about 0.1 s
+(1260 commanded vs 1179-1220 measured at 3 s), held 2097-2099 rpm for
+9.96 s, and read 0 rpm 0.49 s after the last run frame. Vacuum stayed
+at 640-645. During the run the keypad kept sending its idle frame
+(vacuum on, run off) every 52 ms, since it now received a mainboard
+frame for each host frame. Its LCD stayed on STANDBY with `Act 0rpm`
+while the spindle turned at 2100 rpm, but `Vac` followed the
+mainboard frames; the keypad seems to show the measured speed only in
+its own RUN state. Evidence: `claude_test/rs232_probe/sessions/20261117_103946_bridge_run_2100rpm/`.
+
+The mainboard holds its last command when frames stop. After the run
+the bridge exited (10:40:49) with vacuum on, and nothing reached the
+mainboard for a few minutes; when the host next sent a frame, the
+first reply still read vacuum 643. A host frame with vacuum off
+(`C2100000000056`) brought the reading to 231 within 0.15 s and to 0
+within 3 s (`vacuum_off.csv` in the same folder).
+
+When frames stop mid-run, the mainboard stops the spindle by itself
+but still keeps the vacuum on. Two tests at 300 rpm (2026-11-17):
+killing the bridge process (`*_abort_t4b_bridge_killed`) and pulling
+the mainboard-side DB9 (`*_abort_t4a_mainboard_db9_pulled`). In both,
+the first reply after the link came back read 0 rpm with vacuum about
+648, and the operator saw the spindle stop. How long the mainboard
+waits before stopping is not measured: it sends nothing while it gets
+no frames.
+
 ## Mainboard to keypad (White)
 
 Evidence: `claude_test/rs232_probe/sweep_02_white.log` and

@@ -323,7 +323,174 @@ the code for wiring B. Test scenario for B: reach 2100 rpm in 5 s
 (ACL 5.0 s) and hold 2100 rpm for 10 s.
 
 ### Tasks
-- [ ] Commit on `feature/jp4-protocol-parser`, push, open PR, merge
-- [ ] New branch for the bridge; write the forward/override program
-- [ ] Bench test with the operator: forwarding only, then the 2100 rpm
+- [x] Commit on `feature/jp4-protocol-parser`, push, open PR, merge
+      (PR #3, merged 2026-11-17)
+- [x] New branch for the bridge; write the forward/override program
+- [x] GitHub issue for the bridge work (#4)
+- [x] Bench test with the operator: forwarding only, then the 2100 rpm
       scenario
+
+### Notes
+- Bridge code (`spincoater_midas/bridge.py`, `profile.py`) and 10 tests
+  with simulated boards; 25 tests pass. A mutation check (each abort
+  disabled in turn, then the stop frame) made the suite fail every
+  time.
+- Not committed yet: device code must run on the machine first
+  (CommonClaude section 5.1).
+- Both cables enumerate: `...AUCGb144J08...` = ttyUSB0,
+  `...BHCWb144J08...` = ttyUSB1. Which faces which board is decided by
+  `bridge identify` once the wiring is done.
+
+## Check wiring B
+
+### Tasks
+- [x] `bridge identify`: BHCW (ttyUSB1) hears keypad frames = keypad
+      side, as the user said; AUCG (ttyUSB0) silent
+- [x] Keypad frames clean (0 bad); LCD on STANDBY, so Red/Black pass
+- [x] Found: keypad polls; with no reply it retries every ~2.1 s, and
+      the mainboard stays silent (recorded in `docs/jp4_protocol.md`)
+- [x] Verify the transmit paths with a short `forward` run (needs the
+      operator's go-ahead; STANDBY frames only)
+
+## Bench step 1: keypad run through the bridge
+
+### Background
+User request (2026-11-17): "1번 해보자". Forward for 150 s while the
+operator turns VACUUM on and starts a low-rpm one-step recipe from the
+keypad. The host only forwards; all motion is started by the operator.
+Issue #4.
+
+### Tasks
+- [x] Start `bridge forward --seconds 150` with webcam recording
+      (`claude_test/rs232_probe/sessions/20261117_103447_bridge_forward_keypad_run/`)
+- [x] Analyse the log: frame counts, bad frames, poll rate, commanded
+      vs measured speed, vacuum (0 bad; 1234 rpm reached at 4.91 s,
+      hold mean 1231.6 rpm; stop 0.41 s; poll 13.5/s while running)
+- [x] Check the LCD in the video; record results in docs and issue #4
+      (`lcd_sequence.jpg`: STANDBY Vac -634, RUN Act 1234 rpm, END)
+
+## Bench step 2: 2100 rpm scenario driven by the PC
+
+### Background
+User request (2026-11-17): "완료되는대로 2단계도 해보자". Run
+`bridge run --rpm 2100 --accel 5 --hold 10 --yes` with a wafer on the
+chuck, the operator at the machine with the e-stop. The bridge waits
+up to 60 s for the operator to turn VACUUM on (vacuum >= 400), counts
+down 3 s, runs, stops, then forwards 2 s. Issue #4.
+
+### Tasks
+- [x] Start the run with log and webcam recording
+- [x] Analyse: ramp time, hold speed, stop, aborts, LCD
+- [x] Record results in docs, claude_test README and issue #4
+- [x] User request "진공펌프를 꺼줄래?": with the bridge stopped the
+      keypad cannot reach the mainboard, so the host sent vacuum-off
+      frames for 3 s; vacuum 643 to 0, speed 0 (`vacuum_off.csv`)
+
+## Commit the bridge, PR, and a README terminal walkthrough
+
+### Background
+User request (2026-11-17): "그렇게해줘 Readme에도 이 레포를 터미널에서
+어떻게 다루는지 example 세션을 만들어줘." Commit the bench-verified
+bridge, push, open a PR with the bench output; add an example terminal
+session to the README built from real command output. Issue #4.
+
+### Tasks
+- [x] README: example terminal session (setup, tests, identify,
+      listen, forward, run) with real output
+- [x] ruff and pytest on the final tree
+- [x] Commit on `feature/jp4-bridge`, push, open PR (Testing = bench
+      output); merge only when the user asks (PR #5)
+- [ ] Before merging: try the abort paths on the machine (key press,
+      link silence, vacuum loss); they are marked NOT VERIFIED in PR #5
+
+## Abort tests on the machine, merge PR #5, then web control
+
+### Background
+User request (2026-11-17): "테스트하고 머지해줘. 원래 계획대로 터미널
+상에서 restapi를 사용해서 웹서버에서 띠우고 스핀코터 제어할 수 있게
+해줘. 실제 웹사이트의 GUI를 조작해서 RPM이나 ACT 값이 변화하는지
+확인해서 검증해줘"
+
+### Part 1: abort paths on the machine (PR #5)
+All at low speed (500 rpm, ACL 3 s, hold 20 s), wafer on, lid closed,
+operator at the e-stop, log + webcam for each.
+- [x] T1 key press: operator presses STOP on the keypad mid-run. Learn
+      whether STOP changes the keypad frame; if not, repeat with VACUUM
+  - First try (10:58): START/STOP is one key, so the press started the
+    keypad's recipe; the run stopped, but forwarding then let that
+    recipe spin up to 1241 rpm. Fix: after a PC run, send stop frames
+    instead of keypad frames until the keypad is idle; new test
+    `test_keypad_recipe_started_mid_run_does_not_take_over` (fails
+    without the fix). Repeat T1 on the machine.
+- [x] T2 keypad link lost: operator pulls the keypad-side DB9 mid-run;
+      expect "keypad went quiet" and a stop within about 0.5 s
+- [x] T3 vacuum drop: `--min-vacuum 642`, just above the readings seen
+      during a run (640-645), so a real reading trips the check
+- [x] T4a mainboard link lost: operator pulls the mainboard-side DB9
+      mid-run at 300 rpm; the PC cannot send the stop, so this shows
+      what the mainboard does on its own; re-plug, `forward` stops it
+- [x] T4b PC down: kill -9 the bridge mid-run at 300 rpm; after 5 s
+      `forward` resumes, and its first reply shows whether the spindle
+      kept turning (user chose both T4a and T4b)
+- [x] Put the results in PR #5's Testing section; merge; delete branch
+
+### Part 2: web control over a REST API (new issue, branch
+`feature/web-control`)
+- [ ] Server process owns both cables: forwards by default so the keypad
+      works, takes over for a PC run, then forwards again
+- [ ] REST API: `GET /api/status` (state, Set/Act rpm, vacuum, keypad
+      flags), `POST /api/run` (rpm, accel, hold), `POST /api/stop`
+- [ ] Web page: LCD-style panel (Set, Act, Vac, state) updated live,
+      run form, Start and Stop buttons
+- [ ] Same safety gates as `bridge run`: vacuum on with a substrate,
+      spindle still; Stop button aborts at once
+- [ ] Tests on the simulated ports; ruff
+- [ ] Verify on the machine through the browser GUI (automated
+      browser): set rpm, Start, watch Act rise and hold, Stop; webcam
+      and screenshots as evidence
+- [ ] README section; commit, push, PR with the evidence
+- [x] Bridge starts latched too, so a new `forward` process does not
+      adopt a keypad recipe that was already running; test
+      `test_new_bridge_does_not_adopt_a_running_keypad_recipe` (27 pass)
+  - T1 retries with the latch: 11:01 started at once (vacuum already
+    on) and no key was pressed, so not a valid T1; 11:05 nothing
+    started (vacuum stayed off for 60 s). From now on each test starts
+    only on the operator's go, after the operator has turned VACUUM on.
+    T1 still open.
+  - 11:07: with no bridge running the keypad's VACUUM key did nothing
+    (expected in wiring B). Started `forward --seconds 600`
+    (`sessions/20261117_110718_forward_between_tests/`) so the operator
+    can switch VACUUM on before T1; on the operator's go, stop it and
+    start T1.
+  - 11:08 valid T1 with the latch: pass. Stop frame sent in the same
+    poll as the key press; 493 to 31 rpm in 0.25 s, then 0 rpm while the
+    keypad's own recipe ran (command up to 1209 rpm); latch released
+    when the keypad went idle (`sessions/20261117_110816_abort_t1d_*`).
+  - Started `forward --seconds 600` (`sessions/20261117_110930_forward_before_t2/`) so the
+    operator can switch VACUUM on before T2.
+  - 11:10 T2 pass: abort 0.50 s after the last keypad frame, 0 rpm
+    0.30 s later (`sessions/20261117_111005_abort_t2_*`).
+  - Started `forward --seconds 600` (`sessions/20261117_111117_forward_before_t3/`) before T3. T3
+    uses `--min-vacuum 643`, just above the resting reading, so a real
+    reading trips the check; no real leak is induced.
+  - 11:11-11:13 T3 with `--min-vacuum 643`: twice cancelled in the
+    countdown by a 642 reading (nothing turned); third try ran and
+    stopped in the same poll as a 642 reading (1.19 s, 194 rpm). Pass.
+  - User request: "642를 시작 기준으로 잡고 640을 정지기준으로 조정해서
+    해줘". Added `run --start-vacuum` (default = `--min-vacuum`, must
+    not be below it); `abort_test.sh` takes `START_VAC`. Repeat T3 with
+    start 642 / stop 640.
+  - User: "1번은 생략하고 2번부터 해보자": the T3 repeat at start
+    642 / stop 640 is skipped; T3 stands on the 643 run above. Next:
+    T4b (kill -9 at 300 rpm), then T4a.
+  - 11:16 T4b: killed at 269-297 rpm; after 5 s with no frames the
+    first mainboard reply read 0 rpm with vacuum held. The mainboard
+    stops the spindle by itself when frames stop (time to stop within
+    the 5 s not logged; asked the operator).
+  - 11:23 T4a: abort 0.5 s after the last mainboard frame (284 rpm);
+    on re-plug the mainboard read 0 rpm, vacuum 648. Operator: "잘
+    멈추네". Like T4b, the mainboard stops the spindle by itself when
+    frames stop and keeps the vacuum.
+  - 11:30 final `run --rpm 2100 --accel 5 --hold 10` on the final code:
+    2100 rpm command at 4.94 s, held 2093-2099 rpm for 9.96 s, 0 rpm
+    0.43 s after the step, 0 bad frames. Pass.

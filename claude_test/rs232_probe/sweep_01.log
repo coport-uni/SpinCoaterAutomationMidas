@@ -1,0 +1,25 @@
+# 2026-11-17T08:39:43 port=/dev/ttyUSB0 seconds=3.0
+  2400:   172 bytes,   5 distinct,  35.5% printable
+        hex: fa 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b 42 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b 42 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b c2 ff 4b 42 ff
+        txt: b'\xfaK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffKB\xffK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffKB\xffK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffK\xc2\xffKB\xff'
+  4800:   232 bytes,   5 distinct,  75.0% printable
+        hex: 35 21 63 fd 35 21 63 fd 35 21 63 fd 35 21 63 fd 35 21 63 d7 35 21 63 fd 35 21 63 fd 35 21 63 fd 35 21 63 fd 35 21 63 fd 35 21 63 fd 35 21 63 fd 35 21 63 d7 35 21 63 fd 35 21 63 d7 35 21 63 d7
+        txt: b'5!c\xfd5!c\xfd5!c\xfd5!c\xfd5!c\xd75!c\xfd5!c\xfd5!c\xfd5!c\xfd5!c\xfd5!c\xfd5!c\xfd5!c\xd75!c\xfd5!c\xd75!c\xd7'
+  9600:   464 bytes,  16 distinct,  25.0% printable
+        hex: 21 85 84 84 8e 8e 86 27 28 8f 8e 8e 86 86 86 2f 21 8f 8e 8e 8e 86 8e 2f 29 8e 8e 84 8e 8e 8e 2b 21 8f 8e 84 84 8a 8e 2b 29 8f 8e 8e 8a 86 84 25 28 8f 8e 86 8e 8e 8e 2f 28 85 84 86 84 8a 86 25
+        txt: b"!\x85\x84\x84\x8e\x8e\x86'(\x8f\x8e\x8e\x86\x86\x86/!\x8f\x8e\x8e\x8e\x86\x8e/)\x8e\x8e\x84\x8e\x8e\x8e+!\x8f\x8e\x84\x84\x8a\x8e+)\x8f\x8e\x8e\x8a\x86\x84%(\x8f\x8e\x86\x8e\x8e\x8e/(\x85\x84\x86\x84\x8a\x86%"
+ 14400:   638 bytes,   9 distinct,  90.9% printable
+        hex: c1 44 65 48 61 48 61 48 61 4b 39 c1 44 65 48 61 48 61 48 61 4b 39 c1 44 65 48 61 48 61 48 61 4b 39 c1 4c 65 48 61 48 61 48 61 4b 39 c1 44 65 48 61 48 61 48 61 4b 39 c1 4c 65 48 61 48 61 48 61
+        txt: b'\xc1DeHaHaHaK9\xc1DeHaHaHaK9\xc1DeHaHaHaK9\xc1LeHaHaHaK9\xc1DeHaHaHaK9\xc1LeHaHaHa'
+ 19200:   928 bytes,   8 distinct,  87.5% printable
+        hex: 02 43 32 31 30 30 30 30 30 30 30 30 30 35 36 03 02 43 32 31 30 30 30 30 30 30 30 30 30 35 36 03 02 43 32 31 30 30 30 30 30 30 30 30 30 35 36 03 02 43 32 31 30 30 30 30 30 30 30 30 30 35 36 03
+        txt: b'\x02C2100000000056\x03\x02C2100000000056\x03\x02C2100000000056\x03\x02C2100000000056\x03'
+ 38400:  1083 bytes,   7 distinct,   5.3% printable
+        hex: 18 1e 86 78 06 18 18 18 18 18 18 18 18 18 98 e6 18 1e 1e 18 1e 86 78 06 18 18 18 18 18 18 18 18 18 98 e6 18 1e 1e 18 1e 86 78 06 18 18 18 18 18 18 18 18 18 98 e6 18 1e 1e 18 1e 86 78 06 18 18
+        txt: b'\x18\x1e\x86x\x06\x18\x18\x18\x18\x18\x18\x18\x18\x18\x98\xe6\x18\x1e\x1e\x18\x1e\x86x\x06\x18\x18\x18\x18\x18\x18\x18\x18\x18\x98\xe6\x18\x1e\x1e\x18\x1e\x86x\x06\x18\x18\x18\x18\x18\x18\x18\x18\x18\x98\xe6\x18\x1e\x1e\x18\x1e\x86x\x06\x18\x18'
+ 57600:  1211 bytes,   4 distinct,   0.0% printable
+        hex: e0 e0 e0 e0 e0 e0 e0 e0 1c fc e0 fc fc e0 fc 1c e0 e0 00 e0 e0 e0 e0 e0 e0 e0 e0 e0 e0 1c fc e0 fc fc e0 fc 1c e0 e0 00 e0 e0 e0 e0 e0 e0 e0 e0 e0 e0 1c fc e0 fc fc e0 fc 1c e0 e0 00 e0 e0 e0
+        txt: b'\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0\x1c\xfc\xe0\xfc\xfc\xe0\xfc\x1c\xe0\xe0\x00\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0\x1c\xfc\xe0\xfc\xfc\xe0\xfc\x1c\xe0\xe0\x00\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0\xe0\x1c\xfc\xe0\xfc\xfc\xe0\xfc\x1c\xe0\xe0\x00\xe0\xe0\xe0'
+115200:  2204 bytes,   2 distinct,   0.0% printable
+        hex: 00 00 e0 00 e0 00 00 00 e0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 e0 e0 e0 00 00 e0 00 e0 00 00 00 e0 00 e0 00 00 00 e0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+        txt: b'\x00\x00\xe0\x00\xe0\x00\x00\x00\xe0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xe0\xe0\xe0\x00\x00\xe0\x00\xe0\x00\x00\x00\xe0\x00\xe0\x00\x00\x00\xe0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'

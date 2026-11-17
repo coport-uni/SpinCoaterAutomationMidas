@@ -494,3 +494,59 @@ operator at the e-stop, log + webcam for each.
   - 11:30 final `run --rpm 2100 --accel 5 --hold 10` on the final code:
     2100 rpm command at 4.94 s, held 2093-2099 rpm for 9.96 s, 0 rpm
     0.43 s after the step, 0 bad frames. Pass.
+
+## Web control (issue #6, branch `feature/web-control`)
+
+### Background
+Part 2 of the request above. User decisions: local network, FastAPI,
+automated browser for the GUI check. Mid-task request: "웹사이트의
+키패드 디자인은 실제 스핀코터의 UI 구성을 바탕으로 작업해줘".
+
+### Tasks
+- [x] PR #5 merged (abort tests T1, T2, T3, T4a, T4b and a final 2100 rpm
+      run on the final code)
+- [x] Issue #6; branch `feature/web-control`; `.venv` with FastAPI,
+      uvicorn, httpx, Playwright + Chromium (ruff pinned to 0.15.9 like
+      the hooks)
+- [x] `Bridge.run_step(cancel=...)` and `last_sent_command`; test
+- [x] `spincoater_midas/server.py`: controller thread, `GET /api/status`,
+      `POST /api/run`, `POST /api/stop`, 3 s countdown, rpm limit 2100
+- [x] `spincoater_midas/web/index.html`: copy of the real front panel
+      (20x4 LCD, arrow keys, START/STOP, EDIT, VACUUM, ENTER, RCP SEL,
+      PAUSE); EDIT/arrows/PAUSE/ENTER edit the web recipe; VACUUM is
+      keypad-only by design
+- [x] `tests/test_server.py` (8 tests; 36 in all pass; mutation-checked)
+- [x] Server on the real cables, forwarding only; screenshots
+- [x] Bench via the GUI: 2100 rpm / ACL 5 s / 10 s run started with the
+      page's START/STOP; watch Set and Act on the page
+- [x] Bench via the GUI: START/STOP pressed on the page mid-run
+- [x] README section; commit; PR with evidence (PR #7)
+  - 11:42 GUI run 2100/5/10: page Set 0 to 2100, Act to 2099-2100 rpm
+    (99% at 5.16 s), held 10 s, END. Found: page Set stayed 2100 during
+    the 0.5 s stop; fixed with `last_sent_command` = stop frame; test
+    `test_last_sent_command_shows_the_stop` (fails without the fix).
+  - 11:43 GUI stop test (fixed server) 1000 rpm: START/STOP on the page
+    at 8.1 s, 999 to 0 rpm in 0.36 s, page Set 0 at once. Pass.
+- [x] Before merging PR #7: open the page from another PC (needs the
+      container's port 8000 published), and optionally repeat the
+      2100 rpm GUI run on the fixed server; merge when the user asks
+      (user: verify on this PC only; network access out of scope)
+
+## Web control: this PC only, start order in the README example
+
+### Background
+User request (2026-11-17): "이 PC에서만 확인하는 것으로 하고 example에
+서버랑 브릿지키는 방법과 순서도 정리해줘."
+
+### Tasks
+- [x] Server listens on 127.0.0.1 by default; `--host 0.0.0.0` stays
+      as an untested option
+- [x] Open the cables exclusively, so the bridge and the server (or two
+      copies) cannot both drive the mainboard; check on the machine
+- [x] README example: how and in which order to start the bridge or
+      the server, with real output
+- [x] Update PR #7 (drop the LAN item from the scope), merge
+  - 11:47 checked on the machine: with the server running, identify
+    showed both ports busy, bridge and a second server refused ("is in
+    use"); after Ctrl+C the ports were free; forward 3 s, 0 bad frames
+    (`sessions/20261117_114805_start_order/`).

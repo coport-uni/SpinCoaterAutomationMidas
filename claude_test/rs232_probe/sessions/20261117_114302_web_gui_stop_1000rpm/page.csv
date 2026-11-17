@@ -1,0 +1,71 @@
+wall_clock,seconds,lcd_state,lcd,set_rpm,act_rpm,vacuum,message,start_enabled,start_action
+11:43:16.030553,0.00,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -647,0,0,647,Ready.,True,start
+11:43:16.242528,0.21,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:16.495679,0.46,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:16.708384,0.68,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -647,0,0,647,Starting... press START/STOP to cancel.,True,stop
+11:43:16.923551,0.89,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -646,0,0,646,Starting... press START/STOP to cancel.,True,stop
+11:43:17.142368,1.11,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:17.355109,1.33,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:17.569857,1.54,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:17.787610,1.75,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:18.004682,1.97,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:18.221614,2.19,START 1 Stp01/01 V W,START 1 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:18.435219,2.40,START 1 Stp01/01 V W,START 1 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:18.648552,2.62,START 1 Stp01/01 V W,START 1 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -647,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:18.861173,2.83,START 1 Stp01/01 V W,START 1 Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:43:19.073029,3.04,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,33,0,648,Running a 1000 rpm step.,True,stop
+11:43:19.285028,3.26,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   0.2       0rpm | ACL03.0sec  Vac -648,100,0,648,Running a 1000 rpm step.,True,stop
+11:43:19.497478,3.47,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   0.4     160rpm | ACL03.0sec  Vac -648,166,160,648,Running a 1000 rpm step.,True,stop
+11:43:19.709768,3.68,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   0.6     188rpm | ACL03.0sec  Vac -648,200,188,648,Running a 1000 rpm step.,True,stop
+11:43:19.919481,3.89,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   0.8     218rpm | ACL03.0sec  Vac -647,266,218,647,Running a 1000 rpm step.,True,stop
+11:43:20.129169,4.10,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   1.0     256rpm | ACL03.0sec  Vac -648,333,256,648,Running a 1000 rpm step.,True,stop
+11:43:20.342241,4.31,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   1.2     339rpm | ACL03.0sec  Vac -647,400,339,647,Running a 1000 rpm step.,True,stop
+11:43:20.556016,4.53,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   1.4     423rpm | ACL03.0sec  Vac -648,500,423,648,Running a 1000 rpm step.,True,stop
+11:43:20.770046,4.74,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   1.6     494rpm | ACL03.0sec  Vac -648,566,494,648,Running a 1000 rpm step.,True,stop
+11:43:20.981794,4.95,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   1.8     569rpm | ACL03.0sec  Vac -647,600,569,647,Running a 1000 rpm step.,True,stop
+11:43:21.233325,5.20,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   2.0     597rpm | ACL03.0sec  Vac -648,666,597,648,Running a 1000 rpm step.,True,stop
+11:43:21.446385,5.42,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   2.2     674rpm | ACL03.0sec  Vac -648,733,674,648,Running a 1000 rpm step.,True,stop
+11:43:21.657169,5.63,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   2.6     816rpm | ACL03.0sec  Vac -648,900,816,648,Running a 1000 rpm step.,True,stop
+11:43:21.864216,5.84,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   2.8     902rpm | ACL03.0sec  Vac -648,966,902,648,Running a 1000 rpm step.,True,stop
+11:43:22.073521,6.05,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   3.0     936rpm | ACL03.0sec  Vac -648,1000,936,648,Running a 1000 rpm step.,True,stop
+11:43:22.282474,6.26,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   3.2    1002rpm | ACL03.0sec  Vac -648,1000,1002,648,Running a 1000 rpm step.,True,stop
+11:43:22.491173,6.47,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   3.4     995rpm | ACL03.0sec  Vac -648,1000,995,648,Running a 1000 rpm step.,True,stop
+11:43:22.700375,6.67,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   3.6     997rpm | ACL03.0sec  Vac -648,1000,997,648,Running a 1000 rpm step.,True,stop
+11:43:22.911248,6.88,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   3.8     998rpm | ACL03.0sec  Vac -648,1000,998,648,Running a 1000 rpm step.,True,stop
+11:43:23.120758,7.09,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   4.0     998rpm | ACL03.0sec  Vac -648,1000,998,648,Running a 1000 rpm step.,True,stop
+11:43:23.329868,7.30,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   4.2     998rpm | ACL03.0sec  Vac -647,1000,998,647,Running a 1000 rpm step.,True,stop
+11:43:23.538975,7.51,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   4.4     998rpm | ACL03.0sec  Vac -646,1000,998,646,Running a 1000 rpm step.,True,stop
+11:43:23.751425,7.72,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   4.6     997rpm | ACL03.0sec  Vac -648,1000,997,648,Running a 1000 rpm step.,True,stop
+11:43:23.967027,7.93,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   4.8     998rpm | ACL03.0sec  Vac -647,1000,998,647,Running a 1000 rpm step.,True,stop
+11:43:24.179485,8.15,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   5.0     996rpm | ACL03.0sec  Vac -647,1000,996,647,Running a 1000 rpm step.,True,stop
+11:43:24.391789,8.36,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   5.2     998rpm | ACL03.0sec  Vac -648,1000,998,648,Running a 1000 rpm step.,True,stop
+11:43:24.603644,8.57,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   5.4     999rpm | ACL03.0sec  Vac -648,1000,999,648,Running a 1000 rpm step.,True,stop
+11:43:24.816051,8.79,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   5.6     998rpm | ACL03.0sec  Vac -648,1000,998,648,Running a 1000 rpm step.,True,stop
+11:43:25.027169,9.00,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   5.8     997rpm | ACL03.0sec  Vac -647,1000,997,647,Running a 1000 rpm step.,True,stop
+11:43:25.242002,9.21,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   6.0     998rpm | ACL03.0sec  Vac -648,1000,998,648,Running a 1000 rpm step.,True,stop
+11:43:25.452237,9.43,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   6.4     999rpm | ACL03.0sec  Vac -649,1000,999,649,Running a 1000 rpm step.,True,stop
+11:43:25.697405,9.67,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   6.6    1000rpm | ACL03.0sec  Vac -648,1000,1000,648,Running a 1000 rpm step.,True,stop
+11:43:25.907987,9.88,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   6.8     999rpm | ACL03.0sec  Vac -648,1000,999,648,Running a 1000 rpm step.,True,stop
+11:43:26.118142,10.09,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   7.0     999rpm | ACL03.0sec  Vac -648,1000,999,648,Running a 1000 rpm step.,True,stop
+11:43:26.329209,10.30,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   7.2     999rpm | ACL03.0sec  Vac -648,1000,999,648,Running a 1000 rpm step.,True,stop
+11:43:26.539662,10.51,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   7.4     998rpm | ACL03.0sec  Vac -648,1000,998,648,Running a 1000 rpm step.,True,stop
+11:43:26.750659,10.72,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   7.6     999rpm | ACL03.0sec  Vac -648,1000,999,648,Running a 1000 rpm step.,True,stop
+11:43:26.961775,10.93,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   7.8     998rpm | ACL03.0sec  Vac -648,1000,998,648,Running a 1000 rpm step.,True,stop
+11:43:27.173013,11.14,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   8.0     999rpm | ACL03.0sec  Vac -647,1000,999,647,Running a 1000 rpm step.,True,stop
+11:43:27.448395,11.42,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   8.2     998rpm | ACL03.0sec  Vac -647,0,987,648,Running a 1000 rpm step.,True,stop
+11:43:27.660282,11.63,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 020.0    1000rpm | Act   8.6       0rpm | ACL03.0sec  Vac -648,0,0,648,Running a 1000 rpm step.,True,stop
+11:43:27.872522,11.84,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:28.132461,12.10,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:28.343646,12.32,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:28.557729,12.53,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:28.770241,12.74,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:28.984302,12.95,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:29.197554,13.17,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:29.412713,13.38,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:29.628334,13.60,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:29.842624,13.81,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:30.057442,14.03,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:30.272856,14.24,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -647,0,0,647,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:30.487223,14.46,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:30.700218,14.67,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -648,0,0,648,Last run: stopped from the PC (peak 1002 rpm).,True,start
+11:43:30.916456,14.88,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 020.0    1000rpm | Act   0.0       0rpm | ACL03.0sec  Vac -649,0,0,649,Last run: stopped from the PC (peak 1002 rpm).,True,start

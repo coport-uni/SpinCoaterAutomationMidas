@@ -126,6 +126,8 @@ class Bridge:
         self.last_status = None
         self.last_status_time = None
         self.bad_frames = 0
+        # The command the PC is sending during a run; None otherwise.
+        self.last_sent_command = None
         # Set after a PC run; see `forward_once`. It also starts set, so a
         # bridge started while the keypad is mid-recipe (for example right
         # after another bridge process aborted a run) does not adopt it.
@@ -235,6 +237,7 @@ class Bridge:
     def send_stop(self, baseline: jp4.KeypadCommand) -> None:
         """Command speed 0 and run off, keeping vacuum, for a moment."""
         stop = stop_frame(baseline)
+        self.last_sent_command = jp4.parse_keypad_frame(stop)
         end = self.clock() + stop_hold_seconds
         next_send = self.clock()
         while self.clock() < end:
@@ -247,7 +250,9 @@ class Bridge:
             self.read_keypad()
             self.sleep(poll_seconds)
 
-    def run_step(self, profile: StepProfile, min_vacuum: int) -> RunResult:
+    def run_step(
+        self, profile: StepProfile, min_vacuum: int, cancel=None
+    ) -> RunResult:
         """Drive one step from the PC, then hand back to the keypad.
 
         Call only when `ready_problem` returns an empty string. Keypad
@@ -257,6 +262,8 @@ class Bridge:
         Args:
             profile: Speed, acceleration time and hold time.
             min_vacuum: Abort if the vacuum reading falls below this.
+            cancel: Optional function polled during the run; the run
+                stops as soon as it returns True (the web Stop button).
 
         Returns:
             Whether the step completed, and why the run ended.
@@ -283,11 +290,15 @@ class Bridge:
                     )
                     frame = jp4.build_keypad_frame(command)
                     self.mainboard.send(frame)
+                    self.last_sent_command = command
                     self.record("to_mainboard", frame[1:-1].decode("ascii"))
                     next_send += send_period_seconds
                 for frame in self.read_mainboard():
                     self.keypad.send(jp4.wrap_frame(frame[:-2].decode("ascii")))
                     peak = max(peak, self.last_status.speed_rpm)
+                if cancel is not None and cancel():
+                    reason = "stopped from the PC"
+                    break
                 for _ in self.read_keypad():
                     if self.last_command != baseline:
                         reason = "keypad frame changed (a key was pressed)"
@@ -307,14 +318,26 @@ class Bridge:
         finally:
             self.send_stop(baseline)
             self.stop_latched = True
+            self.last_sent_command = None
         completed = not reason
         reason = reason or "step completed"
         self.record("run_end", reason)
         return RunResult(completed, reason, peak)
 
 
+class PortBusyError(RuntimeError):
+    """A JP4 cable is already open in another program."""
+
+
 def open_port(path: str):
-    """Open one JP4 cable: 19200 8N1, non-blocking, modem lines low."""
+    """Open one JP4 cable: 19200 8N1, non-blocking, modem lines low.
+
+    The port is locked, so the bridge and the web server (or two copies
+    of either) cannot both send frames to the mainboard.
+
+    Raises:
+        PortBusyError: If another program holds the port.
+    """
     import serial
 
     port = serial.Serial()
@@ -323,7 +346,15 @@ def open_port(path: str):
     port.timeout = 0
     port.dtr = False
     port.rts = False
-    port.open()
+    port.exclusive = True
+    try:
+        port.open()
+    except serial.SerialException as error:
+        if "lock" not in str(error):
+            raise
+        raise PortBusyError(
+            f"{path} is in use; is the bridge or the server already running?"
+        ) from error
     port.reset_input_buffer()
     return port
 
@@ -339,11 +370,16 @@ def identify(paths: list[str], seconds: float = 2.0) -> dict[str, str]:
         seconds: Listening time per port.
 
     Returns:
-        Map from path to ``"keypad"``, ``"mainboard"`` or ``"silent"``.
+        Map from path to ``"keypad"``, ``"mainboard"``, ``"silent"``, or
+        ``"busy"`` if another program holds the port.
     """
     roles = {}
     for path in paths:
-        port = open_port(path)
+        try:
+            port = open_port(path)
+        except PortBusyError:
+            roles[path] = "busy"
+            continue
         splitter = jp4.FrameSplitter()
         frames = []
         end = time.monotonic() + seconds
@@ -421,9 +457,11 @@ def main() -> None:
         log.writerow(
             [f"{time.monotonic():.3f}", "wall_clock", datetime.datetime.now()]
         )
-    bridge = Bridge(
-        open_port(args.keypad_port), open_port(args.mainboard_port), log=log
-    )
+    try:
+        ports = open_port(args.keypad_port), open_port(args.mainboard_port)
+    except PortBusyError as error:
+        parser.exit(1, f"error: {error}\n")
+    bridge = Bridge(*ports, log=log)
     try:
         if args.mode == "listen":
             bridge.spin(args.seconds, bridge.listen_once)

@@ -1,0 +1,5 @@
+page connected; waiting for Start to be enabled
+clicked Start at 11:41:59.825641
+max Set 2100 rpm, max Act 2100 rpm
+Act reached 2100 rpm (99%) 5.16 s after the page showed RUN
+final message: Last run: step completed (peak 2100 rpm).

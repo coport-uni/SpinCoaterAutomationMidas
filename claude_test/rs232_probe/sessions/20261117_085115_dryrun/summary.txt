@@ -1,0 +1,4 @@
+started 08:51:15.005, 12.3 s
+frames 180, bad checksum 0, distinct 1
+video frames 145, measured fps 15.008651534854984, camera error None
+   180  C2100000200058

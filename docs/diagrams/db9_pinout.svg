@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 470" width="760" height="470" font-family="'Noto Sans KR', 'Malgun Gothic', sans-serif">
+  <rect width="760" height="470" fill="#ffffff"/>
+
+  <!-- Left: KW-525 cable end, male connector, viewed from the front. -->
+  <text x="190" y="40" text-anchor="middle" font-size="17" font-weight="bold" fill="#11161d">KW-525 케이블 끝</text>
+  <text x="190" y="62" text-anchor="middle" font-size="13" fill="#4a5361">수(male) 커넥터 · 핀 쪽에서 본 모습</text>
+  <path d="M 30 100 L 350 100 L 315 230 L 65 230 Z" fill="#e6e9ee" stroke="#5b6472" stroke-width="3" stroke-linejoin="round"/>
+  <g font-size="14" font-weight="bold" text-anchor="middle">
+    <circle cx="78" cy="140" r="16" fill="#c9ced6"/><text x="78" y="145" fill="#11161d">1</text>
+    <circle cx="134" cy="140" r="16" fill="#2f6ea8"/><text x="134" y="145" fill="#ffffff">2</text>
+    <circle cx="190" cy="140" r="16" fill="#c0392b"/><text x="190" y="145" fill="#ffffff">3</text>
+    <circle cx="246" cy="140" r="16" fill="#c9ced6"/><text x="246" y="145" fill="#11161d">4</text>
+    <circle cx="302" cy="140" r="16" fill="#1f2328"/><text x="302" y="145" fill="#ffffff">5</text>
+    <circle cx="106" cy="192" r="16" fill="#c9ced6"/><text x="106" y="197" fill="#11161d">6</text>
+    <circle cx="162" cy="192" r="16" fill="#c9ced6"/><text x="162" y="197" fill="#11161d">7</text>
+    <circle cx="218" cy="192" r="16" fill="#c9ced6"/><text x="218" y="197" fill="#11161d">8</text>
+    <circle cx="274" cy="192" r="16" fill="#c9ced6"/><text x="274" y="197" fill="#11161d">9</text>
+  </g>
+  <text x="190" y="256" text-anchor="middle" font-size="12" fill="#4a5361">넓은 쪽이 위 · 1번은 왼쪽 위</text>
+
+  <!-- Right: mating female connector (terminal adapter), viewed from the front. -->
+  <text x="570" y="40" text-anchor="middle" font-size="17" font-weight="bold" fill="#11161d">단자대 젠더</text>
+  <text x="570" y="62" text-anchor="middle" font-size="13" fill="#4a5361">암(female) 커넥터 · 구멍 쪽에서 본 모습</text>
+  <path d="M 410 100 L 730 100 L 695 230 L 445 230 Z" fill="#e6e9ee" stroke="#5b6472" stroke-width="3" stroke-linejoin="round"/>
+  <g font-size="14" font-weight="bold" text-anchor="middle" stroke-width="4">
+    <circle cx="458" cy="140" r="15" fill="#ffffff" stroke="#1f2328"/><text x="458" y="145" fill="#11161d" stroke="none">5</text>
+    <circle cx="514" cy="140" r="15" fill="#ffffff" stroke="#9aa3b0"/><text x="514" y="145" fill="#4a5361" stroke="none">4</text>
+    <circle cx="570" cy="140" r="15" fill="#ffffff" stroke="#c0392b"/><text x="570" y="145" fill="#c0392b" stroke="none">3</text>
+    <circle cx="626" cy="140" r="15" fill="#ffffff" stroke="#2f6ea8"/><text x="626" y="145" fill="#2f6ea8" stroke="none">2</text>
+    <circle cx="682" cy="140" r="15" fill="#ffffff" stroke="#9aa3b0"/><text x="682" y="145" fill="#4a5361" stroke="none">1</text>
+    <circle cx="486" cy="192" r="15" fill="#ffffff" stroke="#9aa3b0"/><text x="486" y="197" fill="#4a5361" stroke="none">9</text>
+    <circle cx="542" cy="192" r="15" fill="#ffffff" stroke="#9aa3b0"/><text x="542" y="197" fill="#4a5361" stroke="none">8</text>
+    <circle cx="598" cy="192" r="15" fill="#ffffff" stroke="#9aa3b0"/><text x="598" y="197" fill="#4a5361" stroke="none">7</text>
+    <circle cx="654" cy="192" r="15" fill="#ffffff" stroke="#9aa3b0"/><text x="654" y="197" fill="#4a5361" stroke="none">6</text>
+  </g>
+  <text x="570" y="256" text-anchor="middle" font-size="12" fill="#4a5361">좌우가 뒤집힘 · 1번은 오른쪽 위</text>
+
+  <!-- Legend: what each highlighted pin connects to. -->
+  <line x1="30" y1="285" x2="730" y2="285" stroke="#d5d9e0" stroke-width="1.5"/>
+  <text x="30" y="315" font-size="13" font-weight="bold" fill="#4a5361">DB9 핀</text>
+  <text x="250" y="315" font-size="13" font-weight="bold" fill="#4a5361">지금 (엿듣기)</text>
+  <text x="490" y="315" font-size="13" font-weight="bold" fill="#4a5361">3단계 (키패드 대체)</text>
+
+  <circle cx="42" cy="345" r="11" fill="#2f6ea8"/>
+  <text x="62" y="350" font-size="15" fill="#11161d"><tspan font-weight="bold">2 RXD</tspan> PC가 받음</text>
+  <text x="250" y="350" font-size="15" fill="#11161d">→ 파랑선 (분기)</text>
+  <text x="490" y="350" font-size="15" fill="#11161d">→ 흰색선</text>
+
+  <circle cx="42" cy="385" r="11" fill="#c0392b"/>
+  <text x="62" y="390" font-size="15" fill="#11161d"><tspan font-weight="bold">3 TXD</tspan> PC가 보냄</text>
+  <text x="250" y="390" font-size="15" font-weight="bold" fill="#c0392b">연결 금지</text>
+  <text x="490" y="390" font-size="15" fill="#11161d">→ 파랑선</text>
+
+  <circle cx="42" cy="425" r="11" fill="#1f2328"/>
+  <text x="62" y="430" font-size="15" fill="#11161d"><tspan font-weight="bold">5 GND</tspan> 접지</text>
+  <text x="250" y="430" font-size="15" fill="#11161d">→ 검정선</text>
+  <text x="490" y="430" font-size="15" fill="#11161d">→ 검정선</text>
+
+  <text x="730" y="458" text-anchor="end" font-size="11" fill="#6b7480">빨강선(+5V)은 어느 핀에도 연결하지 않음</text>
+</svg>

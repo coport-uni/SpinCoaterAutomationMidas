@@ -1,0 +1,4 @@
+started 08:53:40.824, 199.4 s
+frames 680, bad checksum 0, distinct 1
+video frames 2955, measured fps 15.002340238003171, camera error None
+   680  C2100000000056

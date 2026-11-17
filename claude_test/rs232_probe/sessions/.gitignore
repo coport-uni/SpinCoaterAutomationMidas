@@ -1,0 +1,4 @@
+# Session videos are large; keep logs, notes and curated sheets only.
+*.mp4
+# One snapshot per frame change; White-wire sessions produce hundreds.
+changes/

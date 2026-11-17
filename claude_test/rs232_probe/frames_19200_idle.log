@@ -1,0 +1,7 @@
+# 2026-11-17 ~08:40, /dev/ttyUSB0 19200 8N1, DB9 pin 2 tapped on JP4 Blue,
+# machine in STANDBY (LCD: Stp01/05, Set 015.0 s 2100 rpm, Act 0 rpm,
+# ACL 00.0 s, Vac -000). 10 s listen-only capture, frames split on ETX.
+bytes 3072 frames 192 rate 19.2/s
+192 b'C2100000000056'
+# Checksum check on payload b'C21000000000' (cmd + 11 digits):
+# sum % 256 = 0x56 -> matches the ASCII tail "56".

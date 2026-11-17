@@ -1,0 +1,12 @@
+[project]
+name = "spincoater-midas"
+version = "0.1.0"
+description = "Host-side control of a Midas SPIN-1200D spin coater over JP4"
+requires-python = ">=3.12"
+dependencies = ["pyserial>=3.5"]
+
+[tool.ruff]
+line-length = 80
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

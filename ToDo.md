@@ -530,3 +530,22 @@ automated browser for the GUI check. Mid-task request: "웹사이트의
 - [ ] Before merging PR #7: open the page from another PC (needs the
       container's port 8000 published), and optionally repeat the
       2100 rpm GUI run on the fixed server; merge when the user asks
+
+## Web control: this PC only, start order in the README example
+
+### Background
+User request (2026-11-17): "이 PC에서만 확인하는 것으로 하고 example에
+서버랑 브릿지키는 방법과 순서도 정리해줘."
+
+### Tasks
+- [x] Server listens on 127.0.0.1 by default; `--host 0.0.0.0` stays
+      as an untested option
+- [x] Open the cables exclusively, so the bridge and the server (or two
+      copies) cannot both drive the mainboard; check on the machine
+- [x] README example: how and in which order to start the bridge or
+      the server, with real output
+- [ ] Update PR #7 (drop the LAN item from the scope), merge
+  - 11:47 checked on the machine: with the server running, identify
+    showed both ports busy, bridge and a second server refused ("is in
+    use"); after Ctrl+C the ports were free; forward 3 s, 0 bad frames
+    (`sessions/20261117_114805_start_order/`).

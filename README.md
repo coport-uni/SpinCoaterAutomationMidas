@@ -382,18 +382,19 @@ countdown, or stops it.
 
 ![The web page during a 2100 rpm run: Set 2100, Act 2099](docs/media/images/web_gui_hold_2100rpm.png)
 
-Start it (in the project's `.venv`, which needs `fastapi` and
-`uvicorn`; `pip install -e ".[test]"` adds the test tools):
+Start it from the project's `.venv` (see step 1 of the example
+session below):
 
 ```sh
 python3 -m spincoater_midas.server --keypad-port $K --mainboard-port $M \
     --log server.csv
 ```
 
-Then open `http://<PC address>:8000/`. It listens on all addresses
-(`--host 0.0.0.0`) so other PCs on the network can reach it; inside
-Docker, the container's port 8000 must also be published. The
-automatic API page is at `/docs`.
+Then open `http://127.0.0.1:8000/` in a browser on the same PC; the
+automatic API page is at `/docs`. The server listens on this PC only.
+`--host 0.0.0.0` would open it to the network (and, inside Docker, the
+container's port 8000 must be published), but that has not been
+tested.
 
 | Page key | What it does |
 |---|---|
@@ -436,17 +437,49 @@ browser (`claude_test/web_gui/verify_web_gui.py`):
 
 A full session from a fresh clone to a PC-driven run. Every output
 below was copied from a real terminal on the bench PC (2026-11-17);
-`$` lines are typed, the rest is printed. The run itself is the one in
-`claude_test/rs232_probe/sessions/20261117_103946_bridge_run_2100rpm/`.
+`$` lines are typed, the rest is printed. The bridge run is the one in
+`claude_test/rs232_probe/sessions/20261117_103946_bridge_run_2100rpm/`,
+the start-order steps (9-11) are in
+`claude_test/rs232_probe/sessions/20261117_114805_start_order/`.
 
-**1. Get the code and its two dependencies.** Ubuntu 24.04 blocks a
-system-wide `pip install`, so use a virtual environment.
+### Start order
+
+```mermaid
+flowchart TD
+    A["Power on the coater<br/>plug in both KW-525 cables"] --> B["bridge identify<br/>which cable is the keypad side"]
+    B --> C{"How do you want<br/>to run it?"}
+    C -->|terminal| D["bridge forward<br/>keypad works"]
+    C -->|browser| E["server<br/>keypad works, page at 127.0.0.1:8000"]
+    D --> F["Wafer on the chuck, lid closed<br/>VACUUM on at the keypad"]
+    E --> F
+    F --> G["bridge run ... --yes<br/>or START/STOP on the page"]
+    G --> H["Ctrl+C when done<br/>the keypad is dead until a bridge<br/>or the server runs again"]
+```
+
+1. **Power and cables first.** `identify` can only tell the cables
+   apart while the keypad is powered and sending.
+2. **`identify` before anything else**, to learn which cable faces
+   the keypad. It only reads.
+3. **Start exactly one program: the bridge or the server.** Each one
+   locks both cables, so a second one stops with "is in use" (step 10).
+   With nothing running, the keypad cannot reach the mainboard.
+4. **VACUUM at the keypad**, with a substrate on the chuck, then start
+   the run from the terminal or the page. The PC never switches the
+   vacuum on.
+5. **Ctrl+C to stop the program.** The mainboard then keeps the vacuum
+   on and stops the spindle by itself; start `forward` or the server
+   again to use the keypad.
+
+**1. Get the code and its dependencies.** Ubuntu 24.04 blocks a
+system-wide `pip install`, so use a virtual environment. `[test]` adds
+pytest, httpx and ruff; the playwright package used by
+`claude_test/web_gui/` is not included.
 
 ```console
 $ git clone https://github.com/coport-uni/SpinCoaterAutomationMidas.git
 $ cd SpinCoaterAutomationMidas
 $ python3 -m venv .venv && . .venv/bin/activate
-$ pip install pyserial pytest
+$ pip install -e ".[test]"
 ```
 
 **2. Run the tests.** They need no hardware: the bridge tests use a
@@ -455,17 +488,22 @@ simulated keypad and mainboard.
 ```console
 $ python3 -m pytest
 ============================= test session starts ==============================
-platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0
+platform linux -- Python 3.12.3, pytest-9.2.0, pluggy-1.7.0
 rootdir: /workspace/SpinCoaterAutomationMidas
 configfile: pyproject.toml
 testpaths: tests
-collected 25 items
+plugins: anyio-4.16.0
+collected 38 items
 
-tests/test_bridge.py ..........                                          [ 40%]
-tests/test_jp4_protocol.py ...............                               [100%]
+tests/test_bridge.py ...............                                     [ 39%]
+tests/test_jp4_protocol.py ...............                               [ 78%]
+tests/test_server.py ........                                            [100%]
 
-============================== 25 passed in 0.03s ==============================
+======================== 38 passed, 1 warning in 0.22s =========================
 ```
+
+(The warning is Starlette's notice that its test client wants
+`httpx2`; it does not affect the results.)
 
 **3. See what the bridge can do.**
 
@@ -570,6 +608,53 @@ $ grep run_end run.csv
 $ python3 -c 'from spincoater_midas import jp4_protocol as jp4
 print(jp4.parse_mainboard_frame("38209C70000070"))'
 MainboardStatus(vacuum_reading=643, speed_rpm=1993, tail='0000')
+```
+
+**9. Or start the web server instead of the bridge.** It forwards on
+its own, so the keypad works while it runs. Open
+`http://127.0.0.1:8000/` and use START/STOP on the page.
+
+```console
+$ python3 -m spincoater_midas.server --keypad-port $K --mainboard-port $M
+INFO:     Started server process [202027]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+```
+
+In a second terminal:
+
+```console
+$ curl -s http://127.0.0.1:8000/api/status
+{"state":"forwarding","countdown_seconds":null,"elapsed_seconds":null,"profile":null,"set_rpm":0,"act_rpm":0,"vacuum_reading":0,"keypad":{"vacuum":false,"run":false,"speed_rpm":0},"links":{"keypad":true,"mainboard":true},"ready_problem":"vacuum is off (press VACUUM on the keypad)","last_result":null,"bad_frames":0,"limits":{"max_rpm":2100,"min_vacuum":400,"start_vacuum":400}}
+```
+
+**10. Only one program at a time.** While the server runs, the cables
+are locked:
+
+```console
+$ python3 -m spincoater_midas.bridge identify
+busy      /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_AUCGb144J08-if00-port0
+busy      /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0
+$ python3 -m spincoater_midas.bridge --keypad-port $K --mainboard-port $M forward --seconds 5
+error: /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0 is in use; is the bridge or the server already running?
+$ python3 -m spincoater_midas.server --keypad-port $K --mainboard-port $M --port 8001
+error: /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0 is in use; is the bridge or the server already running?
+```
+
+**11. Stop the server with Ctrl+C.** The cables are free again:
+
+```console
+INFO:     127.0.0.1:47926 - "GET /api/status HTTP/1.1" 200 OK
+^C
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [202027]
+bad frames: 0
+$ python3 -m spincoater_midas.bridge identify
+silent    /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_AUCGb144J08-if00-port0
+keypad    /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0
 ```
 
 ## Safety rules

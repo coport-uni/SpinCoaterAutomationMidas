@@ -1,0 +1,103 @@
+wall_clock,seconds,lcd_state,lcd,set_rpm,act_rpm,vacuum,message,start_enabled,start_action
+11:41:59.843413,0.00,STANDBY Stp01/01 V W,STANDBY Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:42:00.060425,0.22,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -647,0,0,647,Starting... press START/STOP to cancel.,True,stop
+11:42:00.314004,0.48,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:42:00.524147,0.69,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:42:00.736630,0.90,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:42:00.951961,1.11,START 3 Stp01/01 V W,START 3 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Starting... press START/STOP to cancel.,True,stop
+11:42:01.161905,1.33,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -647,0,0,647,Starting... press START/STOP to cancel.,True,stop
+11:42:01.370984,1.54,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:42:01.581519,1.75,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Starting... press START/STOP to cancel.,True,stop
+11:42:01.794593,1.96,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Starting... press START/STOP to cancel.,True,stop
+11:42:02.009966,2.17,START 2 Stp01/01 V W,START 2 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -646,0,0,646,Starting... press START/STOP to cancel.,True,stop
+11:42:02.220324,2.38,START 1 Stp01/01 V W,START 1 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Starting... press START/STOP to cancel.,True,stop
+11:42:02.430414,2.59,START 1 Stp01/01 V W,START 1 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Starting... press START/STOP to cancel.,True,stop
+11:42:02.642158,2.80,START 1 Stp01/01 V W,START 1 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Starting... press START/STOP to cancel.,True,stop
+11:42:02.855970,3.02,START 1 Stp01/01 V W,START 1 Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -647,0,0,647,Starting... press START/STOP to cancel.,True,stop
+11:42:03.069400,3.23,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   0.2       0rpm | ACL05.0sec  Vac -648,84,0,648,Running a 2100 rpm step.,True,stop
+11:42:03.280413,3.44,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   0.4     159rpm | ACL05.0sec  Vac -645,168,159,645,Running a 2100 rpm step.,True,stop
+11:42:03.491317,3.65,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   0.6     207rpm | ACL05.0sec  Vac -643,252,207,643,Running a 2100 rpm step.,True,stop
+11:42:03.704584,3.87,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   0.8     240rpm | ACL05.0sec  Vac -643,336,240,643,Running a 2100 rpm step.,True,stop
+11:42:03.914587,4.08,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   1.0     383rpm | ACL05.0sec  Vac -642,420,383,642,Running a 2100 rpm step.,True,stop
+11:42:04.126815,4.29,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   1.2     419rpm | ACL05.0sec  Vac -644,504,419,644,Running a 2100 rpm step.,True,stop
+11:42:04.337275,4.50,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   1.4     475rpm | ACL05.0sec  Vac -643,588,475,643,Running a 2100 rpm step.,True,stop
+11:42:04.549116,4.71,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   1.6     607rpm | ACL05.0sec  Vac -643,672,607,643,Running a 2100 rpm step.,True,stop
+11:42:04.759327,4.92,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   1.8     655rpm | ACL05.0sec  Vac -643,756,655,643,Running a 2100 rpm step.,True,stop
+11:42:04.969854,5.13,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   2.0     752rpm | ACL05.0sec  Vac -642,840,752,642,Running a 2100 rpm step.,True,stop
+11:42:05.180221,5.34,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   2.2     840rpm | ACL05.0sec  Vac -643,924,840,643,Running a 2100 rpm step.,True,stop
+11:42:05.391073,5.55,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   2.4     921rpm | ACL05.0sec  Vac -643,1008,921,643,Running a 2100 rpm step.,True,stop
+11:42:05.601663,5.77,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   2.6    1009rpm | ACL05.0sec  Vac -648,1092,1009,648,Running a 2100 rpm step.,True,stop
+11:42:05.812424,5.98,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   2.8    1058rpm | ACL05.0sec  Vac -647,1176,1163,643,Running a 2100 rpm step.,True,stop
+11:42:06.071279,6.23,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   3.2    1254rpm | ACL05.0sec  Vac -643,1344,1254,643,Running a 2100 rpm step.,True,stop
+11:42:06.286101,6.45,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   3.4    1343rpm | ACL05.0sec  Vac -643,1428,1343,643,Running a 2100 rpm step.,True,stop
+11:42:06.501106,6.66,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   3.6    1427rpm | ACL05.0sec  Vac -648,1512,1427,648,Running a 2100 rpm step.,True,stop
+11:42:06.718165,6.88,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   3.8    1482rpm | ACL05.0sec  Vac -642,1596,1482,642,Running a 2100 rpm step.,True,stop
+11:42:06.928918,7.09,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   4.0    1572rpm | ACL05.0sec  Vac -643,1680,1572,643,Running a 2100 rpm step.,True,stop
+11:42:07.142160,7.30,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   4.2    1671rpm | ACL05.0sec  Vac -648,1764,1671,648,Running a 2100 rpm step.,True,stop
+11:42:07.359076,7.52,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   4.4    1764rpm | ACL05.0sec  Vac -647,1848,1764,647,Running a 2100 rpm step.,True,stop
+11:42:07.579894,7.73,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   4.6    1852rpm | ACL05.0sec  Vac -642,1932,1852,642,Running a 2100 rpm step.,True,stop
+11:42:07.798358,7.95,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   4.8    1942rpm | ACL05.0sec  Vac -643,2016,1942,643,Running a 2100 rpm step.,True,stop
+11:42:08.012058,8.17,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   5.0    1988rpm | ACL05.0sec  Vac -648,2100,1988,648,Running a 2100 rpm step.,True,stop
+11:42:08.224164,8.39,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   5.4    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:08.436441,8.60,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   5.6    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:08.648203,8.81,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   5.8    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:08.860230,9.02,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   6.0    2098rpm | ACL05.0sec  Vac -648,2100,2098,648,Running a 2100 rpm step.,True,stop
+11:42:09.073843,9.23,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   6.2    2099rpm | ACL05.0sec  Vac -646,2100,2099,646,Running a 2100 rpm step.,True,stop
+11:42:09.286579,9.45,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   6.4    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:09.502586,9.66,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   6.6    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:09.718971,9.88,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   6.8    2097rpm | ACL05.0sec  Vac -647,2100,2097,647,Running a 2100 rpm step.,True,stop
+11:42:09.934757,10.09,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   7.0    2098rpm | ACL05.0sec  Vac -648,2100,2098,648,Running a 2100 rpm step.,True,stop
+11:42:10.149434,10.31,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   7.2    2097rpm | ACL05.0sec  Vac -642,2100,2097,642,Running a 2100 rpm step.,True,stop
+11:42:10.363329,10.52,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   7.4    2100rpm | ACL05.0sec  Vac -643,2100,2100,643,Running a 2100 rpm step.,True,stop
+11:42:10.578341,10.74,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   7.6    2097rpm | ACL05.0sec  Vac -648,2100,2097,648,Running a 2100 rpm step.,True,stop
+11:42:10.791917,10.95,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   7.8    2098rpm | ACL05.0sec  Vac -646,2100,2098,646,Running a 2100 rpm step.,True,stop
+11:42:11.006773,11.17,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   8.0    2098rpm | ACL05.0sec  Vac -642,2100,2098,642,Running a 2100 rpm step.,True,stop
+11:42:11.219721,11.38,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   8.4    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:11.431903,11.59,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   8.6    2099rpm | ACL05.0sec  Vac -648,2100,2099,648,Running a 2100 rpm step.,True,stop
+11:42:11.679139,11.84,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   8.8    2098rpm | ACL05.0sec  Vac -648,2100,2098,648,Running a 2100 rpm step.,True,stop
+11:42:11.891044,12.05,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   9.0    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:12.102930,12.27,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   9.2    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:12.314211,12.48,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   9.4    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:12.525785,12.69,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   9.6    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:12.739295,12.90,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act   9.8    2097rpm | ACL05.0sec  Vac -642,2100,2097,642,Running a 2100 rpm step.,True,stop
+11:42:12.948680,13.11,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  10.0    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:13.156440,13.32,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  10.2    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:13.364870,13.53,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  10.4    2099rpm | ACL05.0sec  Vac -642,2100,2099,642,Running a 2100 rpm step.,True,stop
+11:42:13.573288,13.74,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  10.6    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:13.783301,13.95,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  10.8    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:13.995331,14.16,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  11.0    2098rpm | ACL05.0sec  Vac -642,2100,2098,642,Running a 2100 rpm step.,True,stop
+11:42:14.207858,14.37,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  11.2    2097rpm | ACL05.0sec  Vac -648,2100,2097,648,Running a 2100 rpm step.,True,stop
+11:42:14.419339,14.58,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  11.6    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:14.632606,14.79,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  11.8    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:14.845606,15.01,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  12.0    2099rpm | ACL05.0sec  Vac -649,2100,2099,649,Running a 2100 rpm step.,True,stop
+11:42:15.057399,15.22,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  12.2    2099rpm | ACL05.0sec  Vac -648,2100,2099,648,Running a 2100 rpm step.,True,stop
+11:42:15.271144,15.43,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  12.4    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:15.486111,15.65,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  12.6    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:15.698108,15.86,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  12.8    2098rpm | ACL05.0sec  Vac -648,2100,2098,648,Running a 2100 rpm step.,True,stop
+11:42:15.910374,16.07,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  13.0    2097rpm | ACL05.0sec  Vac -643,2100,2097,643,Running a 2100 rpm step.,True,stop
+11:42:16.123147,16.28,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  13.2    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:16.336029,16.50,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  13.4    2098rpm | ACL05.0sec  Vac -642,2100,2098,642,Running a 2100 rpm step.,True,stop
+11:42:16.550035,16.71,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  13.6    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:16.762531,16.92,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  13.8    2099rpm | ACL05.0sec  Vac -648,2100,2099,648,Running a 2100 rpm step.,True,stop
+11:42:16.974565,17.14,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  14.0    2097rpm | ACL05.0sec  Vac -643,2100,2097,643,Running a 2100 rpm step.,True,stop
+11:42:17.186592,17.35,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  14.2    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:17.401891,17.56,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  14.4    2098rpm | ACL05.0sec  Vac -643,2100,2098,643,Running a 2100 rpm step.,True,stop
+11:42:17.614042,17.78,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  14.6    2098rpm | ACL05.0sec  Vac -648,2100,2099,648,Running a 2100 rpm step.,True,stop
+11:42:17.825037,17.99,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  15.0    2097rpm | ACL05.0sec  Vac -643,2100,2097,643,Running a 2100 rpm step.,True,stop
+11:42:18.036685,18.20,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  15.2    2099rpm | ACL05.0sec  Vac -643,2100,2099,643,Running a 2100 rpm step.,True,stop
+11:42:18.248692,18.41,RUN     Stp01/01 V W,RUN     Stp01/01 V W | Set 010.0    2100rpm | Act  15.4     383rpm | ACL05.0sec  Vac -643,2100,383,643,Running a 2100 rpm step.,True,stop
+11:42:18.463134,18.62,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Last run: step completed (peak 2100 rpm).,True,start
+11:42:18.716514,18.88,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Last run: step completed (peak 2100 rpm).,True,start
+11:42:18.928271,19.09,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Last run: step completed (peak 2100 rpm).,True,start
+11:42:19.140338,19.30,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -644,0,0,644,Last run: step completed (peak 2100 rpm).,True,start
+11:42:19.352642,19.51,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Last run: step completed (peak 2100 rpm).,True,start
+11:42:19.564630,19.73,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Last run: step completed (peak 2100 rpm).,True,start
+11:42:19.780513,19.94,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Last run: step completed (peak 2100 rpm).,True,start
+11:42:19.990035,20.16,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Last run: step completed (peak 2100 rpm).,True,start
+11:42:20.200986,20.36,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Last run: step completed (peak 2100 rpm).,True,start
+11:42:20.413060,20.58,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Last run: step completed (peak 2100 rpm).,True,start
+11:42:20.622919,20.79,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -642,0,0,642,Last run: step completed (peak 2100 rpm).,True,start
+11:42:20.834225,21.00,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Last run: step completed (peak 2100 rpm).,True,start
+11:42:21.042817,21.21,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -648,0,0,648,Last run: step completed (peak 2100 rpm).,True,start
+11:42:21.251882,21.42,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Last run: step completed (peak 2100 rpm).,True,start
+11:42:21.460546,21.63,END     Stp01/01 V W,END     Stp01/01 V W | Set 010.0    2100rpm | Act   0.0       0rpm | ACL05.0sec  Vac -643,0,0,643,Last run: step completed (peak 2100 rpm).,True,start

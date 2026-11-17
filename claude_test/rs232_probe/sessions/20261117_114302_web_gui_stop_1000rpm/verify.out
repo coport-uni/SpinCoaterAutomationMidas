@@ -1,0 +1,6 @@
+page connected; waiting for Start to be enabled
+clicked Start at 11:43:16.017121
+clicked Stop at 11:43:27.200337 (8.10 s into the run)
+max Set 1000 rpm, max Act 1002 rpm
+Act reached 1000 rpm (99%) 3.21 s after the page showed RUN
+final message: Last run: stopped from the PC (peak 1002 rpm).

@@ -325,8 +325,19 @@ class Bridge:
         return RunResult(completed, reason, peak)
 
 
+class PortBusyError(RuntimeError):
+    """A JP4 cable is already open in another program."""
+
+
 def open_port(path: str):
-    """Open one JP4 cable: 19200 8N1, non-blocking, modem lines low."""
+    """Open one JP4 cable: 19200 8N1, non-blocking, modem lines low.
+
+    The port is locked, so the bridge and the web server (or two copies
+    of either) cannot both send frames to the mainboard.
+
+    Raises:
+        PortBusyError: If another program holds the port.
+    """
     import serial
 
     port = serial.Serial()
@@ -335,7 +346,15 @@ def open_port(path: str):
     port.timeout = 0
     port.dtr = False
     port.rts = False
-    port.open()
+    port.exclusive = True
+    try:
+        port.open()
+    except serial.SerialException as error:
+        if "lock" not in str(error):
+            raise
+        raise PortBusyError(
+            f"{path} is in use; is the bridge or the server already running?"
+        ) from error
     port.reset_input_buffer()
     return port
 
@@ -351,11 +370,16 @@ def identify(paths: list[str], seconds: float = 2.0) -> dict[str, str]:
         seconds: Listening time per port.
 
     Returns:
-        Map from path to ``"keypad"``, ``"mainboard"`` or ``"silent"``.
+        Map from path to ``"keypad"``, ``"mainboard"``, ``"silent"``, or
+        ``"busy"`` if another program holds the port.
     """
     roles = {}
     for path in paths:
-        port = open_port(path)
+        try:
+            port = open_port(path)
+        except PortBusyError:
+            roles[path] = "busy"
+            continue
         splitter = jp4.FrameSplitter()
         frames = []
         end = time.monotonic() + seconds
@@ -433,9 +457,11 @@ def main() -> None:
         log.writerow(
             [f"{time.monotonic():.3f}", "wall_clock", datetime.datetime.now()]
         )
-    bridge = Bridge(
-        open_port(args.keypad_port), open_port(args.mainboard_port), log=log
-    )
+    try:
+        ports = open_port(args.keypad_port), open_port(args.mainboard_port)
+    except PortBusyError as error:
+        parser.exit(1, f"error: {error}\n")
+    bridge = Bridge(*ports, log=log)
     try:
         if args.mode == "listen":
             bridge.spin(args.seconds, bridge.listen_once)

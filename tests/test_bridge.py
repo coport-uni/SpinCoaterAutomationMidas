@@ -333,3 +333,18 @@ def test_last_sent_command_shows_the_stop():
     bench.run_step(scenario, min_vacuum)
     assert shown_with_stop
     assert all(c.speed_rpm == 0 and not c.run for c in shown_with_stop)
+
+
+def test_busy_port_is_reported(monkeypatch):
+    """A port another program holds is named, not a raw traceback."""
+    import serial
+
+    def refuse(self):
+        raise serial.SerialException(
+            "Could not exclusively lock port /dev/x: [Errno 11]"
+        )
+
+    monkeypatch.setattr(serial.Serial, "open", refuse)
+    with pytest.raises(bridge_module.PortBusyError, match="in use"):
+        bridge_module.open_port("/dev/x")
+    assert bridge_module.identify(["/dev/x"], seconds=0) == {"/dev/x": "busy"}

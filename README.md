@@ -334,8 +334,9 @@ $B --keypad-port $K --mainboard-port $M --log run.csv \
    run --rpm 2100 --accel 5 --hold 10 --yes                    # operator present
 ```
 
-`run` keeps forwarding until the keypad shows vacuum on, the spindle
-is still and the vacuum reading is at least 400 (a substrate is held),
+`run` keeps forwarding until the vacuum is on (switched at the
+keypad), the spindle is still and the vacuum reading is at least 400
+(a substrate is held),
 counts down 3 s, then drives the step. It stops the spindle (speed 0,
 run off, vacuum kept on) when the step ends or as soon as:
 
@@ -400,7 +401,7 @@ tested.
 |---|---|
 | START/STOP | Start the web recipe (3 s countdown); during a countdown or run, stop |
 | EDIT, Left/Right, PAUSE (digit sel), Up/Down, ENTER | Edit speed, step time and ACL on the LCD, as on the machine |
-| VACUUM | Only shows a note: switch the vacuum on at the machine's keypad, so a person checks the substrate |
+| VACUUM | Switches the vacuum on or off, like the machine's VACUUM key (not during a countdown or run) |
 | RCP SEL | Only shows a note: the page has one recipe, `W` |
 
 Below the panel, **Set** is the speed being commanded (by the PC
@@ -414,16 +415,25 @@ mainboard measures, and **Vac** is the vacuum reading.
 | `POST /api/stop` | | Cancels the countdown or stops the run |
 
 ```console
-$ curl -s -X POST http://127.0.0.1:8000/api/run -H "Content-Type: application/json" -d '{"rpm": 3000, "accel": 5, "hold": 10}'
-{"detail":"3000 rpm is above the 2100 rpm limit"}
+$ curl -s -X POST http://127.0.0.1:8000/api/run -H "Content-Type: application/json" -d '{"rpm": 3001, "accel": 5, "hold": 10}'
+{"detail":"3001 rpm is above the 3000 rpm limit"}
 ```
 
-The speed limit is 2100 rpm by default, the highest speed tried on
-this machine; raise it with `--max-rpm`. ACL may be up to 99.9 s and
-the step time up to 999.9 s, the longest the keypad's LCD can show.
-The gates of `bridge run` apply (keypad vacuum on, vacuum reading at
-least `--min-vacuum`, spindle still), and a key on the machine, a lost
-cable or a vacuum drop stops a run.
+The speed limit is 3000 rpm by default, set by the user; change it
+with `--max-rpm`. ACL may be up to 99.9 s and the step time up to
+999.9 s, the longest the keypad's LCD can show. The gates of
+`bridge run` apply (vacuum on, vacuum reading at least `--min-vacuum`,
+spindle still), and a key on the machine, a lost cable or a vacuum
+drop stops a run.
+
+**One vacuum state, two VACUUM keys.** The PC holds the vacuum state
+and puts it into every frame it forwards to the mainboard. It starts
+from the keypad's state; the page's VACUUM key sets it, and each press
+of the machine's VACUUM key toggles it. The vacuum is never switched
+off while the spindle turns. The keypad's own `V` mark only follows
+its own key, so after a change from the page it can disagree with the
+real vacuum; the `Vac` reading on both screens is always the real one.
+
 
 Bench results on 2026-11-17, with the page operated by a headless
 browser (`claude_test/web_gui/verify_web_gui.py`):
@@ -441,6 +451,8 @@ below was copied from a real terminal on the bench PC (2026-11-17);
 `claude_test/rs232_probe/sessions/20261117_103946_bridge_run_2100rpm/`,
 the start-order steps (9-11) are in
 `claude_test/rs232_probe/sessions/20261117_114805_start_order/`.
+Messages from later versions can differ slightly (for example
+"press VACUUM on the keypad or the page", and the 3000 rpm limit).
 
 ### Start order
 
@@ -450,7 +462,7 @@ flowchart TD
     B --> C{"How do you want<br/>to run it?"}
     C -->|terminal| D["bridge forward<br/>keypad works"]
     C -->|browser| E["server<br/>keypad works, page at 127.0.0.1:8000"]
-    D --> F["Wafer on the chuck, lid closed<br/>VACUUM on at the keypad"]
+    D --> F["Wafer on the chuck, lid closed<br/>VACUUM on (keypad, or page with the server)"]
     E --> F
     F --> G["bridge run ... --yes<br/>or START/STOP on the page"]
     G --> H["Ctrl+C when done<br/>the keypad is dead until a bridge<br/>or the server runs again"]
@@ -463,9 +475,9 @@ flowchart TD
 3. **Start exactly one program: the bridge or the server.** Each one
    locks both cables, so a second one stops with "is in use" (step 10).
    With nothing running, the keypad cannot reach the mainboard.
-4. **VACUUM at the keypad**, with a substrate on the chuck, then start
-   the run from the terminal or the page. The PC never switches the
-   vacuum on.
+4. **VACUUM on**, with a substrate on the chuck: at the keypad, or
+   with the page's VACUUM key when the server runs. Then start the run
+   from the terminal or the page.
 5. **Ctrl+C to stop the program.** The mainboard then keeps the vacuum
    on and stops the spindle by itself; start `forward` or the server
    again to use the keypad.
@@ -664,7 +676,11 @@ keypad    /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_B
 - **The operator starts every run, and stays at the machine.** With
   the keypad, that is START. With `bridge run`, it is the operator
   turning VACUUM on: the PC starts 3 s after the vacuum holds a
-  substrate. No script switches vacuum or power on its own.
+  substrate. With the server, it is START/STOP on the page. The vacuum
+  is switched only by a person, at the keypad or on the page; no
+  script switches vacuum or power on its own.
+- **The vacuum is never released while the spindle turns,** whichever
+  VACUUM key is pressed.
 - **Check the recipe's step count before START.** All steps run.
 - **Lid closed, e-stop within reach** for every run.
 - **In setup B the PC sits between the STOP key and the motor.** If the

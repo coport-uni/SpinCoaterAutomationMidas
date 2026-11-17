@@ -1,0 +1,32 @@
+$ python3 -m spincoater_midas.bridge identify
+silent    /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_AUCGb144J08-if00-port0
+keypad    /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0
+$ python3 -m spincoater_midas.server --keypad-port $K --mainboard-port $M
+INFO:     Started server process [202027]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+--- second terminal ---
+$ python3 -m spincoater_midas.bridge identify
+busy      /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_AUCGb144J08-if00-port0
+busy      /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0
+$ python3 -m spincoater_midas.bridge --keypad-port $K --mainboard-port $M forward --seconds 5
+error: /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0 is in use; is the bridge or the server already running?
+(exit 1)
+$ python3 -m spincoater_midas.server --keypad-port $K --mainboard-port $M --port 8001
+error: /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0 is in use; is the bridge or the server already running?
+(exit 1)
+$ curl -s http://127.0.0.1:8000/api/status
+{"state":"forwarding","countdown_seconds":null,"elapsed_seconds":null,"profile":null,"set_rpm":0,"act_rpm":0,"vacuum_reading":0,"keypad":{"vacuum":false,"run":false,"speed_rpm":0},"links":{"keypad":true,"mainboard":true},"ready_problem":"vacuum is off (press VACUUM on the keypad)","last_result":null,"bad_frames":0,"limits":{"max_rpm":2100,"min_vacuum":400,"start_vacuum":400}}
+--- Ctrl+C in the server terminal ---
+INFO:     127.0.0.1:47926 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [202027]
+bad frames: 0
+$ python3 -m spincoater_midas.bridge identify
+silent    /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_AUCGb144J08-if00-port0
+keypad    /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_BHCWb144J08-if00-port0
+$ python3 -m spincoater_midas.bridge --keypad-port $K --mainboard-port $M forward --seconds 3
+bad frames: 0; last mainboard status: MainboardStatus(vacuum_reading=0, speed_rpm=0, tail='0000')

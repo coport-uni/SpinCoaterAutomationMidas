@@ -302,3 +302,34 @@ def test_new_bridge_does_not_adopt_a_running_keypad_recipe():
     after = [c for t, c in commands if t > recipe_end + frame_period]
     assert during and all(c.speed_rpm == 0 and not c.run for c in during)
     assert after and all(c == keypad_idle_vacuum for c in after)
+
+
+def test_cancel_stops_the_run():
+    cancel_time = 1.0 + fault_time
+    bench, clock, _, mainboard_port = make_bench()
+    start, result = None, None
+    bench.spin(1.0, bench.forward_once)
+    start = clock.now
+    result = bench.run_step(
+        scenario, min_vacuum, cancel=lambda: clock.now >= cancel_time
+    )
+    assert_aborted_near_fault(result, mainboard_port, start, "PC")
+    assert bench.last_sent_command is None
+
+
+def test_last_sent_command_shows_the_stop():
+    """The web page's Set must read 0 while the stop frame is sent."""
+    bench, clock, _, mainboard_port = make_bench()
+    bench.spin(1.0, bench.forward_once)
+    shown_with_stop = []
+    real_send = bench.mainboard.send
+
+    def send(frame):
+        if not jp4.parse_keypad_frame(frame).run:
+            shown_with_stop.append(bench.last_sent_command)
+        real_send(frame)
+
+    bench.mainboard.send = send
+    bench.run_step(scenario, min_vacuum)
+    assert shown_with_stop
+    assert all(c.speed_rpm == 0 and not c.run for c in shown_with_stop)

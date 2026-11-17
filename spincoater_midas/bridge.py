@@ -126,6 +126,8 @@ class Bridge:
         self.last_status = None
         self.last_status_time = None
         self.bad_frames = 0
+        # The command the PC is sending during a run; None otherwise.
+        self.last_sent_command = None
         # Set after a PC run; see `forward_once`. It also starts set, so a
         # bridge started while the keypad is mid-recipe (for example right
         # after another bridge process aborted a run) does not adopt it.
@@ -235,6 +237,7 @@ class Bridge:
     def send_stop(self, baseline: jp4.KeypadCommand) -> None:
         """Command speed 0 and run off, keeping vacuum, for a moment."""
         stop = stop_frame(baseline)
+        self.last_sent_command = jp4.parse_keypad_frame(stop)
         end = self.clock() + stop_hold_seconds
         next_send = self.clock()
         while self.clock() < end:
@@ -247,7 +250,9 @@ class Bridge:
             self.read_keypad()
             self.sleep(poll_seconds)
 
-    def run_step(self, profile: StepProfile, min_vacuum: int) -> RunResult:
+    def run_step(
+        self, profile: StepProfile, min_vacuum: int, cancel=None
+    ) -> RunResult:
         """Drive one step from the PC, then hand back to the keypad.
 
         Call only when `ready_problem` returns an empty string. Keypad
@@ -257,6 +262,8 @@ class Bridge:
         Args:
             profile: Speed, acceleration time and hold time.
             min_vacuum: Abort if the vacuum reading falls below this.
+            cancel: Optional function polled during the run; the run
+                stops as soon as it returns True (the web Stop button).
 
         Returns:
             Whether the step completed, and why the run ended.
@@ -283,11 +290,15 @@ class Bridge:
                     )
                     frame = jp4.build_keypad_frame(command)
                     self.mainboard.send(frame)
+                    self.last_sent_command = command
                     self.record("to_mainboard", frame[1:-1].decode("ascii"))
                     next_send += send_period_seconds
                 for frame in self.read_mainboard():
                     self.keypad.send(jp4.wrap_frame(frame[:-2].decode("ascii")))
                     peak = max(peak, self.last_status.speed_rpm)
+                if cancel is not None and cancel():
+                    reason = "stopped from the PC"
+                    break
                 for _ in self.read_keypad():
                     if self.last_command != baseline:
                         reason = "keypad frame changed (a key was pressed)"
@@ -307,6 +318,7 @@ class Bridge:
         finally:
             self.send_stop(baseline)
             self.stop_latched = True
+            self.last_sent_command = None
         completed = not reason
         reason = reason or "step completed"
         self.record("run_end", reason)

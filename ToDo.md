@@ -520,10 +520,13 @@ automated browser for the GUI check. Mid-task request: "웹사이트의
 - [x] Bench via the GUI: 2100 rpm / ACL 5 s / 10 s run started with the
       page's START/STOP; watch Set and Act on the page
 - [x] Bench via the GUI: START/STOP pressed on the page mid-run
-- [ ] README section; commit; PR with evidence
+- [x] README section; commit; PR with evidence (PR #7)
   - 11:42 GUI run 2100/5/10: page Set 0 to 2100, Act to 2099-2100 rpm
     (99% at 5.16 s), held 10 s, END. Found: page Set stayed 2100 during
     the 0.5 s stop; fixed with `last_sent_command` = stop frame; test
     `test_last_sent_command_shows_the_stop` (fails without the fix).
   - 11:43 GUI stop test (fixed server) 1000 rpm: START/STOP on the page
     at 8.1 s, 999 to 0 rpm in 0.36 s, page Set 0 at once. Pass.
+- [ ] Before merging PR #7: open the page from another PC (needs the
+      container's port 8000 published), and optionally repeat the
+      2100 rpm GUI run on the fixed server; merge when the user asks

@@ -398,5 +398,7 @@ session to the README built from real command output. Issue #4.
 - [x] README: example terminal session (setup, tests, identify,
       listen, forward, run) with real output
 - [x] ruff and pytest on the final tree
-- [ ] Commit on `feature/jp4-bridge`, push, open PR (Testing = bench
-      output); merge only when the user asks
+- [x] Commit on `feature/jp4-bridge`, push, open PR (Testing = bench
+      output); merge only when the user asks (PR #5)
+- [ ] Before merging: try the abort paths on the machine (key press,
+      link silence, vacuum loss); they are marked NOT VERIFIED in PR #5

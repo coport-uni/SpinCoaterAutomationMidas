@@ -25,11 +25,12 @@ fit together. Every number below comes from a recording on the bench
 6. [What happens during a run](#what-happens-during-a-run)
 7. [Bench setup](#bench-setup)
 8. [Software](#software)
-9. [Example terminal session](#example-terminal-session)
-10. [Safety rules](#safety-rules)
-11. [Open questions](#open-questions)
-12. [Glossary](#glossary)
-13. [Where to find things](#where-to-find-things)
+9. [Web control](#web-control)
+10. [Example terminal session](#example-terminal-session)
+11. [Safety rules](#safety-rules)
+12. [Open questions](#open-questions)
+13. [Glossary](#glossary)
+14. [Where to find things](#where-to-find-things)
 
 ## Status
 
@@ -39,18 +40,20 @@ flowchart LR
     S2["<b>2 · Listen</b><br/>decode both directions<br/><i>done</i>"]
     S3["<b>3 · Parser</b><br/>Python module + tests<br/><i>done, 15 tests pass</i>"]
     S4["<b>4 · PC in the middle</b><br/>wiring B, forward + override<br/><i>done, bench-verified</i>"]
-    S5["<b>5 · PC control</b><br/>run recipes from a script<br/><i>not started</i>"]
-    S1 --> S2 --> S3 --> S4 --> S5
+    S5["<b>5 · PC control</b><br/>web page + REST API, one step<br/><i>done, bench-verified</i>"]
+    S6["<b>6 · Recipes</b><br/>multi-step recipes from the PC<br/><i>not started</i>"]
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6
 
     classDef done fill:#d8eedd,stroke:#2f7d55,color:#11161d
     classDef part fill:#fdf0d0,stroke:#a8821f,color:#11161d
     classDef todo fill:#eceff3,stroke:#9aa3b0,color:#11161d
-    class S1,S2,S3,S4 done
-    class S5 todo
+    class S1,S2,S3,S4,S5 done
+    class S6 todo
 ```
 
-**Nothing has been sent from the PC to the machine yet.** Every
-recording so far was listen-only.
+The PC now runs the coater through wiring B: from the terminal
+(`bridge run`) or from a web page (`server`). Every number in this
+README comes from a run on the bench with the operator present.
 
 ## The machine in one picture
 
@@ -279,6 +282,8 @@ the mainboard instead.
 spincoater_midas/jp4_protocol.py   frame parser and builder (both directions)
 spincoater_midas/bridge.py         wiring B: listen, forward, run one step
 spincoater_midas/profile.py        speed ramp for one step, as the keypad makes it
+spincoater_midas/server.py         web page + REST API on top of the bridge
+spincoater_midas/web/index.html    the page: a copy of the machine's front panel
 tests/                             pytest suite; fixtures are recorded frames
 claude_test/rs232_probe/           capture tools and every recording session
 claude_test/readme_figures/        script that draws the figures in this README
@@ -366,6 +371,66 @@ With the PC forwarding, the keypad polls about 14 times a second
 instead of 19, because each reply takes about 42 ms through the PC.
 The keypad's own ramp is timed by the clock, so recipes still run to
 time.
+
+## Web control
+
+`spincoater_midas.server` keeps the bridge running in a background
+thread and serves a page that looks like the machine's front panel.
+While nobody starts a run it only forwards, so the real keypad works as
+usual. START/STOP on the page starts a one-step run after a 3 s
+countdown, or stops it.
+
+![The web page during a 2100 rpm run: Set 2100, Act 2099](docs/media/images/web_gui_hold_2100rpm.png)
+
+Start it (in the project's `.venv`, which needs `fastapi` and
+`uvicorn`; `pip install -e ".[test]"` adds the test tools):
+
+```sh
+python3 -m spincoater_midas.server --keypad-port $K --mainboard-port $M \
+    --log server.csv
+```
+
+Then open `http://<PC address>:8000/`. It listens on all addresses
+(`--host 0.0.0.0`) so other PCs on the network can reach it; inside
+Docker, the container's port 8000 must also be published. The
+automatic API page is at `/docs`.
+
+| Page key | What it does |
+|---|---|
+| START/STOP | Start the web recipe (3 s countdown); during a countdown or run, stop |
+| EDIT, Left/Right, PAUSE (digit sel), Up/Down, ENTER | Edit speed, step time and ACL on the LCD, as on the machine |
+| VACUUM | Only shows a note: switch the vacuum on at the machine's keypad, so a person checks the substrate |
+| RCP SEL | Only shows a note: the page has one recipe, `W` |
+
+Below the panel, **Set** is the speed being commanded (by the PC
+during a web run, by the keypad otherwise), **Act** is the speed the
+mainboard measures, and **Vac** is the vacuum reading.
+
+| Endpoint | Body | Result |
+|---|---|---|
+| `GET /api/status` | | State, Set/Act rpm, vacuum, keypad flags, link health, last result |
+| `POST /api/run` | `{"rpm": 2100, "accel": 5, "hold": 10}` | 202 and the status; 409 with the reason if busy, not ready or above the limit; 422 if a value is out of range |
+| `POST /api/stop` | | Cancels the countdown or stops the run |
+
+```console
+$ curl -s -X POST http://127.0.0.1:8000/api/run -H "Content-Type: application/json" -d '{"rpm": 3000, "accel": 5, "hold": 10}'
+{"detail":"3000 rpm is above the 2100 rpm limit"}
+```
+
+The speed limit is 2100 rpm by default, the highest speed tried on
+this machine; raise it with `--max-rpm`. ACL may be up to 99.9 s and
+the step time up to 999.9 s, the longest the keypad's LCD can show.
+The gates of `bridge run` apply (keypad vacuum on, vacuum reading at
+least `--min-vacuum`, spindle still), and a key on the machine, a lost
+cable or a vacuum drop stops a run.
+
+Bench results on 2026-11-17, with the page operated by a headless
+browser (`claude_test/web_gui/verify_web_gui.py`):
+
+| Test | Page showed | Machine |
+|---|---|---|
+| START/STOP on the page; 2100 rpm, ACL 5 s, 10 s | Set 0 to 2100; Act 419, 921, 1427, 1942, then 2099-2100 rpm; END | Act at 99% after 5.16 s, held 10 s, stopped |
+| START/STOP pressed again 8 s into a 1000 rpm run | Set 0 at once, Act 0, STANDBY | 999 to 0 rpm within 0.36 s of the click |
 
 ## Example terminal session
 

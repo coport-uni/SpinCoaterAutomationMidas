@@ -348,3 +348,43 @@ def test_busy_port_is_reported(monkeypatch):
     with pytest.raises(bridge_module.PortBusyError, match="in use"):
         bridge_module.open_port("/dev/x")
     assert bridge_module.identify(["/dev/x"], seconds=0) == {"/dev/x": "busy"}
+
+
+def test_keypad_and_pc_share_one_vacuum_state():
+    """Both VACUUM keys toggle one state; the forwarded bit follows it."""
+    press_time = 2.0
+    bench, clock, _, mainboard_port = make_bench(
+        keypad_source=lambda t: keypad_body(
+            keypad_idle if t < press_time else keypad_idle_vacuum
+        )
+    )
+
+    def sent_vacuum(since):
+        return {c.vacuum for _, c in sent_commands(mainboard_port, since)}
+
+    bench.spin(1.0, bench.forward_once)
+    assert bench.vacuum_on is False and sent_vacuum(0.0) == {False}
+
+    bench.set_vacuum(True)
+    switched = clock.now
+    bench.spin(0.5, bench.forward_once)
+    assert sent_vacuum(switched + frame_period) == {True}
+    assert bench.ready_problem(min_vacuum) == ""
+
+    # The keypad's VACUUM press flips its flag off -> on: a toggle, so
+    # the shared state goes off although the keypad now shows V.
+    bench.spin(press_time + 0.5 - clock.now, bench.forward_once)
+    assert bench.vacuum_on is False
+    assert sent_vacuum(clock.now - 0.2) == {False}
+    assert "vacuum is off" in bench.ready_problem(min_vacuum)
+
+
+def test_vacuum_stays_on_while_the_spindle_turns():
+    turning_rpm = 500
+    bench, _, _, _ = make_bench()
+    bench.spin(0.5, bench.forward_once)
+    bench.set_vacuum(False)
+    bench.last_status = jp4.MainboardStatus(wafer_vacuum, turning_rpm, "0000")
+    assert bench.vacuum_command() is True
+    bench.last_status = jp4.MainboardStatus(wafer_vacuum, 0, "0000")
+    assert bench.vacuum_command() is False

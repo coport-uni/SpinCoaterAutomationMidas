@@ -550,3 +550,18 @@ User request (2026-11-17): "이 PC에서만 확인하는 것으로 하고 exampl
     showed both ports busy, bridge and a second server refused ("is in
     use"); after Ctrl+C the ports were free; forward 3 s, 0 bad frames
     (`sessions/20261117_114805_start_order/`).
+
+## README: Software section first
+
+### Background
+User request (2026-11-17): "software 섹션을 가장 위로 올려줘".
+
+### Tasks
+- [x] Move `## Software` (with its "Wiring B bridge" part) to be the
+      first section after the contents list; renumber the contents
+- [x] Check every heading, contents link and relative link still works
+- [ ] Commit, PR
+  - Contents order matches the headings, no broken anchors or file
+    links. Fixed one stale "abort tests below" (the table is now above,
+    under Wiring B bridge). Added a two-line pointer to wiring B and the
+    start order, and `claude_test/web_gui/` to the file list.

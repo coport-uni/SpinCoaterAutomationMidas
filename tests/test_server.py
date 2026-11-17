@@ -5,6 +5,8 @@ from test_bridge import (
     empty_chuck_vacuum,
     fault_time,
     frame_period,
+    keypad_body,
+    keypad_idle,
     make_bench,
     reaction_seconds,
     scenario,
@@ -157,3 +159,22 @@ def test_stop_during_run_stops_the_spindle():
     assert last_running - stop_time < reaction_seconds
     after = [c for t, c in commands if t > last_running + frame_period]
     assert after and all(c.speed_rpm == 0 and not c.run for c in after)
+
+
+def test_vacuum_from_the_page():
+    controller, client, clock, mainboard_port = make_server(
+        keypad_source=lambda t: keypad_body(keypad_idle)
+    )
+    drive(controller, clock, settle_seconds)
+    assert client.get("/api/status").json()["vacuum_on"] is False
+    assert client.post("/api/run", json=run_body).status_code == 409
+
+    response = client.post("/api/vacuum", json={"on": True})
+    assert response.status_code == 200
+    assert response.json()["vacuum_on"] is True
+    switched = clock.now
+    drive(controller, clock, settle_seconds)
+    sent = sent_commands(mainboard_port, since=switched + frame_period)
+    assert sent and all(c.vacuum for _, c in sent)
+    assert client.post("/api/run", json=run_body).status_code == 202
+    assert client.post("/api/vacuum", json={"on": False}).status_code == 409

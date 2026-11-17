@@ -527,9 +527,10 @@ automated browser for the GUI check. Mid-task request: "웹사이트의
     `test_last_sent_command_shows_the_stop` (fails without the fix).
   - 11:43 GUI stop test (fixed server) 1000 rpm: START/STOP on the page
     at 8.1 s, 999 to 0 rpm in 0.36 s, page Set 0 at once. Pass.
-- [ ] Before merging PR #7: open the page from another PC (needs the
+- [x] Before merging PR #7: open the page from another PC (needs the
       container's port 8000 published), and optionally repeat the
       2100 rpm GUI run on the fixed server; merge when the user asks
+      (user: verify on this PC only; network access out of scope)
 
 ## Web control: this PC only, start order in the README example
 
@@ -544,7 +545,7 @@ User request (2026-11-17): "이 PC에서만 확인하는 것으로 하고 exampl
       copies) cannot both drive the mainboard; check on the machine
 - [x] README example: how and in which order to start the bridge or
       the server, with real output
-- [ ] Update PR #7 (drop the LAN item from the scope), merge
+- [x] Update PR #7 (drop the LAN item from the scope), merge
   - 11:47 checked on the machine: with the server running, identify
     showed both ports busy, bridge and a second server refused ("is in
     use"); after Ctrl+C the ports were free; forward 3 s, 0 bad frames

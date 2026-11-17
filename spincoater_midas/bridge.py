@@ -20,7 +20,7 @@ import argparse
 import csv
 import datetime
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from spincoater_midas import jp4_protocol as jp4
 from spincoater_midas.profile import StepProfile
@@ -132,6 +132,11 @@ class Bridge:
         # bridge started while the keypad is mid-recipe (for example right
         # after another bridge process aborted a run) does not adopt it.
         self.stop_latched = True
+        # The vacuum the PC asks for. It starts from the keypad's state,
+        # each VACUUM press on the keypad toggles it, and the web page
+        # can set it, so both act on one state.
+        self.vacuum_on = None
+        self.keypad_vacuum_seen = None
 
     def record(self, event: str, detail: str = "") -> None:
         """Write one line to the session log, if there is one."""
@@ -150,8 +155,36 @@ class Bridge:
                 continue
             self.last_command_time = self.clock()
             self.record("keypad_rx", frame.decode("ascii"))
+            self.track_keypad_vacuum(self.last_command.vacuum)
             frames.append(frame)
         return frames
+
+    def track_keypad_vacuum(self, keypad_vacuum: bool) -> None:
+        """Toggle the shared vacuum state when VACUUM is pressed.
+
+        The keypad flips its own vacuum flag on each press, so a change
+        in the flag is a press, whatever the PC has set meanwhile.
+        """
+        if self.vacuum_on is None:
+            self.vacuum_on = keypad_vacuum
+        elif keypad_vacuum != self.keypad_vacuum_seen:
+            self.vacuum_on = not self.vacuum_on
+            self.record("vacuum", f"keypad toggled it to {self.vacuum_on}")
+        self.keypad_vacuum_seen = keypad_vacuum
+
+    def set_vacuum(self, on: bool) -> None:
+        """Switch the shared vacuum state from the PC."""
+        self.vacuum_on = on
+        self.record("vacuum", f"PC set it to {on}")
+
+    def vacuum_command(self) -> bool:
+        """Return the vacuum bit to send to the mainboard.
+
+        It is the shared state, except that it stays on while the spindle
+        turns, so a substrate is never released while spinning.
+        """
+        turning = self.last_status is not None and self.last_status.speed_rpm
+        return bool(self.vacuum_on) or bool(turning)
 
     def read_mainboard(self) -> list[bytes]:
         """Poll the mainboard cable and remember the latest status."""
@@ -188,11 +221,12 @@ class Bridge:
     def forward_once(self) -> None:
         """Pass every valid frame through to the other side.
 
-        After a PC run, a stop frame replaces each keypad frame until the
-        keypad itself is idle. START and STOP are one key, so pressing it
-        during a PC run starts the keypad's own recipe; without the latch
-        that recipe would take over the spindle when forwarding resumed
-        (bench, 2026-11-17).
+        The vacuum bit is replaced by the shared vacuum state (see
+        `vacuum_command`). After a PC run, a stop frame replaces each
+        keypad frame until the keypad itself is idle. START and STOP are
+        one key, so pressing it during a PC run starts the keypad's own
+        recipe; without the latch that recipe would take over the
+        spindle when forwarding resumed (bench, 2026-11-17).
         """
         for frame in self.read_keypad():
             if self.stop_latched and not self.keypad_idle():
@@ -203,7 +237,10 @@ class Bridge:
             if self.stop_latched:
                 self.stop_latched = False
                 self.record("stop_released", "keypad is idle")
-            self.mainboard.send(jp4.wrap_frame(frame[:-2].decode("ascii")))
+            command = replace(
+                jp4.parse_keypad_frame(frame), vacuum=self.vacuum_command()
+            )
+            self.mainboard.send(jp4.build_keypad_frame(command))
         for frame in self.read_mainboard():
             self.keypad.send(jp4.wrap_frame(frame[:-2].decode("ascii")))
 
@@ -223,8 +260,8 @@ class Bridge:
         command = self.last_command
         if command.run or command.speed_rpm:
             return "keypad is running its own recipe"
-        if not command.vacuum:
-            return "vacuum is off (press VACUUM on the keypad)"
+        if not self.vacuum_on:
+            return "vacuum is off (press VACUUM on the keypad or the page)"
         if self.last_status.speed_rpm:
             return "spindle is still turning"
         if self.last_status.vacuum_reading < min_vacuum:

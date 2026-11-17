@@ -550,3 +550,41 @@ User request (2026-11-17): "이 PC에서만 확인하는 것으로 하고 exampl
     showed both ports busy, bridge and a second server refused ("is in
     use"); after Ctrl+C the ports were free; forward 3 s, 0 bad frames
     (`sessions/20261117_114805_start_order/`).
+
+## Web vacuum, 3000 rpm limit, keypad display
+
+### Background
+User request (2026-11-17): "1) RPM 리밋은 3000으로 올리고 2) 웹에서도
+vaccum을 킬 수 있도록해줘. 3) 웹에서 변동된 사항이 키패드에도
+반영되어 보이도록 구성해줘. 궁극적으로 이 장치의 자동화 구축이
+목표이니 이렇게 진행". Choices: 2) one shared vacuum state that both
+the page and the keypad toggle; 3) explore JP4 frames to the keypad
+first (the keypad draws Set/time/ACL/V/RUN from its own memory; only
+the vacuum reading follows the mainboard frames so far).
+
+### Tasks
+- [x] Default speed limit 3000 rpm (`--max-rpm` still overrides)
+- [x] Bridge owns the vacuum state: starts from the keypad's, every
+      keypad VACUUM press toggles it, the page sets it; forwarded
+      frames carry it; never off while the spindle turns
+- [x] `POST /api/vacuum`; page VACUUM key toggles it; LCD `V` follows
+- [x] Tests; ruff
+- [x] Bench: page VACUUM on/off at rest, keypad VACUUM after the page,
+      3000 rpm run from the page (operator present)
+- [ ] Explore JP4 to the keypad, no motion: vary the mainboard frame's
+      unknown tail and other frames, film the keypad LCD
+- [ ] README, PR
+  - 12:18 the user operated the page: VACUUM on/off/on (648/0/648),
+    2100 rpm run completed with the keypad's flag off (shared state
+    works), countdown cancel, VACUUM off. 3001 rpm refused. Still open:
+    keypad VACUUM toggling the shared state, and a 3000 rpm run.
+  - User (mid-task): explore the keypad display only after 1) and 2)
+    are verified, committed and merged.
+  - Operator (later, own server started without --log): "A,B 둘다 잘
+    되는 것 같네": keypad VACUUM toggled the shared state off after the
+    page switched it on (A), and a 3000 rpm run from the page ran (B).
+    No log of A or B; the operator server's /api/status showed the
+    3000/5/10 request accepted (limit 3000) and, in that instance, a
+    countdown cancel as the last result.
+- [x] README updated (3000 rpm limit, one vacuum state, start order,
+      safety rules)

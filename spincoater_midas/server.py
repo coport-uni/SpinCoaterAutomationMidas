@@ -3,10 +3,10 @@
 One background thread owns both JP4 cables through a `Bridge`. It
 forwards frames so the keypad keeps working, and on a web request it
 counts down, runs one step from the PC, and goes back to forwarding.
-The same safety gates as ``bridge run`` apply: the keypad must show
-vacuum on, the vacuum must hold a substrate, and the spindle must be
-still. A key press, a silent link, a vacuum drop or the web Stop
-button ends a run.
+The same safety gates as ``bridge run`` apply: the vacuum must be on
+(switched from the keypad or the page) and hold a substrate, and the
+spindle must be still. A key press, a silent link, a vacuum drop or the
+web Stop button ends a run.
 
 Run it with::
 
@@ -36,14 +36,19 @@ from spincoater_midas.bridge import (
 )
 from spincoater_midas.profile import StepProfile
 
-# Highest speed run on this machine so far (2100 rpm, 2026-11-17).
-# Raise it with --max-rpm once higher speeds have been tried by hand.
-default_max_rpm = 2100
+# Speed limit set by the user (2026-11-17); --max-rpm overrides it.
+default_max_rpm = 3000
 # The keypad LCD shows ACL as 00.0 s and the step time as 000.0 s, so
 # these are the longest times a keypad recipe can hold.
 max_acceleration_seconds = 99.9
 max_hold_seconds = 999.9
 page_path = Path(__file__).with_name("web") / "index.html"
+
+
+class VacuumRequest(BaseModel):
+    """Body of ``POST /api/vacuum``."""
+
+    on: bool
 
 
 class RunRequest(BaseModel):
@@ -140,6 +145,17 @@ class Controller:
             self.state = "countdown"
         self.bridge.record("web_run", repr(profile))
 
+    def request_vacuum(self, on: bool) -> None:
+        """Switch the shared vacuum state.
+
+        Raises:
+            ValueError: If a countdown or run is under way.
+        """
+        with self.lock:
+            if self.state != "forwarding":
+                raise ValueError(f"not during a run: {self.state}")
+            self.bridge.set_vacuum(on)
+
     def request_stop(self) -> None:
         """Cancel the countdown or stop the run at once."""
         self.stop_requested = True
@@ -214,6 +230,7 @@ class Controller:
             "set_rpm": set_rpm,
             "act_rpm": status.speed_rpm if status else None,
             "vacuum_reading": status.vacuum_reading if status else None,
+            "vacuum_on": bridge.vacuum_on,
             "keypad": (
                 {
                     "vacuum": command.vacuum,
@@ -280,6 +297,15 @@ def create_app(controller: Controller) -> FastAPI:
         profile = StepProfile(request.rpm, request.accel, request.hold)
         try:
             controller.request_run(profile)
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from None
+        return controller.status()
+
+    @app.post("/api/vacuum")
+    def post_vacuum(request: VacuumRequest) -> dict:
+        """Switch the vacuum on or off, as the keypad's VACUUM key does."""
+        try:
+            controller.request_vacuum(request.on)
         except ValueError as error:
             raise HTTPException(status_code=409, detail=str(error)) from None
         return controller.status()

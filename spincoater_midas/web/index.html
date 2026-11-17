@@ -285,9 +285,10 @@
     <p class="note">The keys work like the machine's: START/STOP starts
       this recipe (3 s countdown) or stops the run; EDIT, the arrows,
       PAUSE (digit sel) and ENTER change the values on the LCD. VACUUM
-      must be switched on at the machine's own keypad, with a substrate
-      on the chuck. Any key on the machine, a lost cable or a vacuum drop
-      also stops a run.</p>
+      switches the vacuum on and off, the same as the machine's own
+      VACUUM key; a run needs it on with a substrate on the chuck. Any
+      key on the machine, a lost cable or a vacuum drop also stops a
+      run.</p>
   </section>
 </main>
 
@@ -341,7 +342,7 @@
   }
 
   function lcd_lines(s) {
-    const vacuum_on = s && s.keypad && s.keypad.vacuum ? "V" : " ";
+    const vacuum_on = s && s.vacuum_on ? "V" : " ";
     const line1 = state_word(s).padEnd(8) + "Stp01/01 " + vacuum_on + " W";
     const set_rpm = s && s.state === "running" && s.profile
       ? pad(s.profile.rpm, 4) : digits_of(edit_fields[1]);
@@ -428,6 +429,7 @@
     field("start").disabled = !busy && (editing || Boolean(s.ready_problem));
     field("start").dataset.action = busy ? "stop" : "start";
     field("key-edit").disabled = busy;
+    field("key-vacuum").disabled = busy;
     show_message(s);
   }
 
@@ -519,9 +521,10 @@
   });
   field("key-up").addEventListener("click", () => editing && step_digit(1));
   field("key-down").addEventListener("click", () => editing && step_digit(-1));
-  field("key-vacuum").addEventListener("click", () => refuse(
-    "VACUUM: switch it on at the machine's keypad. The PC never "
-    + "switches the vacuum, so a person checks the substrate first."));
+  field("key-vacuum").addEventListener("click", () => {
+    if (!last_status) return;
+    post("/api/vacuum", { on: !last_status.vacuum_on });
+  });
   field("key-rcp").addEventListener("click", () => refuse(
     "RCP SEL: the web page has one recipe (W), set below or with EDIT."));
   ["rpm", "accel", "hold"].forEach((id) => field(id).addEventListener(

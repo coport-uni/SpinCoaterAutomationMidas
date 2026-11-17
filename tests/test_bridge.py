@@ -252,3 +252,53 @@ def test_vacuum_loss_aborts_run():
     )
     start, result = start_run(bench, clock)
     assert_aborted_near_fault(result, mainboard_port, start, "vacuum")
+
+
+def test_keypad_recipe_started_mid_run_does_not_take_over():
+    """START/STOP during a PC run starts the keypad's own recipe.
+
+    The run must stop, and forwarding must not hand the spindle to that
+    recipe: the mainboard gets stop frames until the keypad is idle.
+    """
+    keypad_recipe_seconds = 5.0
+    keypad_recipe = jp4.KeypadCommand(speed_rpm=1234, vacuum=True, run=True)
+
+    def keypad_source(t):
+        fault = run_start[0] + fault_time
+        if fault <= t < fault + keypad_recipe_seconds:
+            return keypad_body(keypad_recipe)
+        return keypad_body(keypad_idle_vacuum)
+
+    run_start = [float("inf")]
+    bench, clock, _, mainboard_port = make_bench(keypad_source=keypad_source)
+    bench.spin(1.0, bench.forward_once)
+    run_start[0] = clock.now
+    result = bench.run_step(scenario, min_vacuum)
+    assert_aborted_near_fault(result, mainboard_port, run_start[0], "keypad")
+
+    recipe_end = run_start[0] + fault_time + keypad_recipe_seconds
+    abort_time = clock.now
+    bench.spin(keypad_recipe_seconds + 1.0, bench.forward_once)
+    after_abort = sent_commands(mainboard_port, since=abort_time)
+    during_recipe = [c for t, c in after_abort if t < recipe_end]
+    after_recipe = [c for t, c in after_abort if t > recipe_end + frame_period]
+    assert during_recipe
+    assert all(c.speed_rpm == 0 and not c.run for c in during_recipe)
+    assert after_recipe and all(c == keypad_idle_vacuum for c in after_recipe)
+    assert not bench.stop_latched
+
+
+def test_new_bridge_does_not_adopt_a_running_keypad_recipe():
+    keypad_recipe = jp4.KeypadCommand(speed_rpm=1234, vacuum=True, run=True)
+    recipe_end = 2.0
+    bench, _, _, mainboard_port = make_bench(
+        keypad_source=lambda t: keypad_body(
+            keypad_recipe if t < recipe_end else keypad_idle_vacuum
+        )
+    )
+    bench.spin(recipe_end + 1.0, bench.forward_once)
+    commands = sent_commands(mainboard_port)
+    during = [c for t, c in commands if t < recipe_end]
+    after = [c for t, c in commands if t > recipe_end + frame_period]
+    assert during and all(c.speed_rpm == 0 and not c.run for c in during)
+    assert after and all(c == keypad_idle_vacuum for c in after)

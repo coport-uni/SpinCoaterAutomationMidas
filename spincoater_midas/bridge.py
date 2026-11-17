@@ -42,6 +42,26 @@ ready_timeout_seconds = 60.0
 countdown_seconds = 3
 
 
+def stop_frame(baseline: jp4.KeypadCommand) -> bytes:
+    """Build a frame for speed 0 and run off, with the vacuum kept on.
+
+    Args:
+        baseline: Keypad command whose constant fields are copied.
+
+    Returns:
+        The complete frame, ready to send to the mainboard.
+    """
+    return jp4.build_keypad_frame(
+        jp4.KeypadCommand(
+            speed_rpm=0,
+            vacuum=True,
+            run=False,
+            prefix=baseline.prefix,
+            tail=baseline.tail,
+        )
+    )
+
+
 class Link:
     """One serial cable with its frame splitter."""
 
@@ -106,6 +126,10 @@ class Bridge:
         self.last_status = None
         self.last_status_time = None
         self.bad_frames = 0
+        # Set after a PC run; see `forward_once`. It also starts set, so a
+        # bridge started while the keypad is mid-recipe (for example right
+        # after another bridge process aborted a run) does not adopt it.
+        self.stop_latched = True
 
     def record(self, event: str, detail: str = "") -> None:
         """Write one line to the session log, if there is one."""
@@ -154,9 +178,29 @@ class Bridge:
         self.read_keypad()
         self.read_mainboard()
 
+    def keypad_idle(self) -> bool:
+        """True if the keypad is not running a recipe of its own."""
+        command = self.last_command
+        return not command.run and not command.speed_rpm
+
     def forward_once(self) -> None:
-        """Pass every valid frame through to the other side."""
+        """Pass every valid frame through to the other side.
+
+        After a PC run, a stop frame replaces each keypad frame until the
+        keypad itself is idle. START and STOP are one key, so pressing it
+        during a PC run starts the keypad's own recipe; without the latch
+        that recipe would take over the spindle when forwarding resumed
+        (bench, 2026-11-17).
+        """
         for frame in self.read_keypad():
+            if self.stop_latched and not self.keypad_idle():
+                frame = stop_frame(self.last_command)
+                self.record("to_mainboard", frame[1:-1].decode("ascii"))
+                self.mainboard.send(frame)
+                continue
+            if self.stop_latched:
+                self.stop_latched = False
+                self.record("stop_released", "keypad is idle")
             self.mainboard.send(jp4.wrap_frame(frame[:-2].decode("ascii")))
         for frame in self.read_mainboard():
             self.keypad.send(jp4.wrap_frame(frame[:-2].decode("ascii")))
@@ -190,15 +234,7 @@ class Bridge:
 
     def send_stop(self, baseline: jp4.KeypadCommand) -> None:
         """Command speed 0 and run off, keeping vacuum, for a moment."""
-        stop = jp4.build_keypad_frame(
-            jp4.KeypadCommand(
-                speed_rpm=0,
-                vacuum=True,
-                run=False,
-                prefix=baseline.prefix,
-                tail=baseline.tail,
-            )
-        )
+        stop = stop_frame(baseline)
         end = self.clock() + stop_hold_seconds
         next_send = self.clock()
         while self.clock() < end:
@@ -270,6 +306,7 @@ class Bridge:
             reason = "interrupted by the operator"
         finally:
             self.send_stop(baseline)
+            self.stop_latched = True
         completed = not reason
         reason = reason or "step completed"
         self.record("run_end", reason)
@@ -341,7 +378,18 @@ def main() -> None:
     run.add_argument("--rpm", type=int, required=True)
     run.add_argument("--accel", type=float, required=True)
     run.add_argument("--hold", type=float, required=True)
-    run.add_argument("--min-vacuum", type=int, default=default_min_vacuum)
+    run.add_argument(
+        "--min-vacuum",
+        type=int,
+        default=default_min_vacuum,
+        help="stop the run if the vacuum reading falls below this",
+    )
+    run.add_argument(
+        "--start-vacuum",
+        type=int,
+        help="reading needed to start (default: --min-vacuum); set it "
+        "above --min-vacuum so reading noise cannot stop a run at once",
+    )
     run.add_argument(
         "--yes",
         action="store_true",
@@ -360,6 +408,11 @@ def main() -> None:
         parser.error("--keypad-port and --mainboard-port are required")
     if args.mode == "run" and not args.yes:
         parser.error("run needs --yes: the operator must be at the machine")
+    if args.mode == "run":
+        if args.start_vacuum is None:
+            args.start_vacuum = args.min_vacuum
+        if args.start_vacuum < args.min_vacuum:
+            parser.error("--start-vacuum must not be below --min-vacuum")
 
     log_file = open(args.log, "w", newline="") if args.log else None
     log = csv.writer(log_file) if log_file else None
@@ -382,7 +435,7 @@ def main() -> None:
             problem = "waiting"
             while problem and time.monotonic() < deadline:
                 bridge.spin(0.5, bridge.forward_once)
-                problem = bridge.ready_problem(args.min_vacuum)
+                problem = bridge.ready_problem(args.start_vacuum)
                 if problem:
                     print(f"not ready: {problem}", flush=True)
             if problem:
@@ -391,7 +444,7 @@ def main() -> None:
             for count in range(countdown_seconds, 0, -1):
                 print(f"starting in {count} s (Ctrl+C to cancel)", flush=True)
                 bridge.spin(1.0, bridge.forward_once)
-                problem = bridge.ready_problem(args.min_vacuum)
+                problem = bridge.ready_problem(args.start_vacuum)
                 if problem:
                     print(f"cancelled: {problem}")
                     return

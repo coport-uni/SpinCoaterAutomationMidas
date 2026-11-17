@@ -1,0 +1,5 @@
+starting in 3 s (Ctrl+C to cancel)
+starting in 2 s (Ctrl+C to cancel)
+starting in 1 s (Ctrl+C to cancel)
+keypad went quiet; peak measured 508 rpm
+bad frames: 0; last mainboard status: MainboardStatus(vacuum_reading=642, speed_rpm=0, tail='0000')

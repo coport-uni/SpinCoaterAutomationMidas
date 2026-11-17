@@ -131,9 +131,16 @@ the bridge exited (10:40:49) with vacuum on, and nothing reached the
 mainboard for a few minutes; when the host next sent a frame, the
 first reply still read vacuum 643. A host frame with vacuum off
 (`C2100000000056`) brought the reading to 231 within 0.15 s and to 0
-within 3 s (`vacuum_off.csv` in the same folder). This was seen for
-vacuum with the spindle stopped; what the spindle does when frames stop
-mid-run is still untested.
+within 3 s (`vacuum_off.csv` in the same folder).
+
+When frames stop mid-run, the mainboard stops the spindle by itself
+but still keeps the vacuum on. Two tests at 300 rpm (2026-11-17):
+killing the bridge process (`*_abort_t4b_bridge_killed`) and pulling
+the mainboard-side DB9 (`*_abort_t4a_mainboard_db9_pulled`). In both,
+the first reply after the link came back read 0 rpm with vacuum about
+648, and the operator saw the spindle stop. How long the mainboard
+waits before stopping is not measured: it sends nothing while it gets
+no frames.
 
 ## Mainboard to keypad (White)
 

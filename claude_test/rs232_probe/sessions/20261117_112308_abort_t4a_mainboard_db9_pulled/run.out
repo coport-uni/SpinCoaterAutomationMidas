@@ -1,0 +1,7 @@
+not ready: no frames from the keypad
+not ready: no frames from the keypad
+starting in 3 s (Ctrl+C to cancel)
+starting in 2 s (Ctrl+C to cancel)
+starting in 1 s (Ctrl+C to cancel)
+mainboard went quiet; peak measured 308 rpm
+bad frames: 0; last mainboard status: MainboardStatus(vacuum_reading=647, speed_rpm=284, tail='0000')

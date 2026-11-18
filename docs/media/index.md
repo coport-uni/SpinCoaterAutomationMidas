@@ -23,7 +23,9 @@ not committed; the copies here are H.264 re-encodes (CRF 28, 720p,
 | [videos/20261117_0927_run_5steps_white.mp4](videos/20261117_0927_run_5steps_white.mp4) | 2 min 42 s | First run: step 1 at 1234 rpm then steps 2-5 by accident; listening on White. | `sessions/20261117_092708_step5_run_white/` |
 | [videos/20261117_0937_run_1step_blue.mp4](videos/20261117_0937_run_1step_blue.mp4) | 1 min 6 s | One-step run (1234 rpm, 5 s, ACL 5 s), listening on Blue: the keypad's commanded speed ramps 24 -> 1234. | `sessions/20261117_093707_step5_run_blue_1step/` |
 | [videos/20261118_1638_web_control_demo.mp4](videos/20261118_1638_web_control_demo.mp4) | 40 s | Phone video by the user (2026-11-18): a 2200 rpm, ACL 5.0 s, 10 s step started from the web page; the page shows Set 1540 / Act 1444 rpm during the ramp, then the chuck stops. H.264 720p copy of `docs/KakaoTalk_20261118_163849760.mp4` (1080p HEVC, which not every browser plays). | none (server run without `--log`) |
-| [videos/20261118_1638_web_control_demo.gif](videos/20261118_1638_web_control_demo.gif) | 16 s (2.5x) | Same video at 480 px for the top of the README. | as above |
+| [videos/20261118_1638_web_control_demo.gif](videos/20261118_1638_web_control_demo.gif) | 16 s (2.5x) | Same video at 480 px (the README's first demo, replaced on 2026-11-18 by the 17:35 video). | as above |
+| [videos/20261118_1735_web_control_demo.mp4](videos/20261118_1735_web_control_demo.mp4) | 47 s | Phone video by the user (2026-11-18): the recipe set with the web page's keys (2200 rpm, ACL 2.0 s, 5.0 s), vacuum on (Vac 637), the step run to the end (Act 2198 rpm; page: "step completed (peak 2200 rpm)"), then the vacuum off. The orange DB9 brackets are on the side of the machine. H.264 720p copy of `docs/KakaoTalk_20261118_173513543.mp4` (1080p HEVC). | none (server run without `--log`) |
+| [videos/20261118_1735_web_control_demo.gif](videos/20261118_1735_web_control_demo.gif) | 16 s (3x) | Same video at 480 px, 7 fps, for the top of the README. | as above |
 
 ## Images
 
@@ -38,6 +40,8 @@ not committed; the copies here are H.264 re-encodes (CRF 28, 720p,
 | [images/white_vacuum_lcd_163.jpg](images/white_vacuum_lcd_163.jpg) | LCD `Vac -163` at 09:16:30, 09:16:55 and 09:17:29; decoded means 162.6, 163.7, 164.2. |
 | [images/run_lcd_sequence_5steps.jpg](images/run_lcd_sequence_5steps.jpg) | LCD through the first run: STANDBY, RUN Stp01 (Act 0783), Stp02-05 (Set 0000, Act 0246), END. |
 | [images/run_blue_lcd_keypoints.jpg](images/run_blue_lcd_keypoints.jpg) | LCD at VACUUM on, START, end of ramp and end of step in the one-step run. |
+| [images/db9_brackets_on_machine.jpg](images/db9_brackets_on_machine.jpg) | Frame at 0:21 of the 17:35 demo video: the printed DB9 brackets on the right side of the case. |
+| [images/db9_bracket_views.png](images/db9_bracket_views.png) | Three rendered views of `hardware/DB9_dual_bracket_v1.step`. |
 
 ## Other photos in `docs/`
 

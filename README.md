@@ -1,13 +1,14 @@
 # SpinCoaterAutomationMidas
 
 <p align="center">
-  <a href="docs/media/videos/20261118_1638_web_control_demo.mp4">
-    <img src="docs/media/videos/20261118_1638_web_control_demo.gif" width="480"
-         alt="The coater spinning at 2200 rpm while the laptop shows the web control page with Set and Act rising">
+  <a href="docs/media/videos/20261118_1735_web_control_demo.mp4">
+    <img src="docs/media/videos/20261118_1735_web_control_demo.gif" width="480"
+         alt="The coater spinning at 2200 rpm while the laptop shows the web control page, with the orange DB9 brackets on the side of the machine">
   </a>
   <br>
-  <sub>A 2200 rpm, ACL 5 s, 10 s step started from the web page (2.5x
-  speed). Click for the full 40 s video.</sub>
+  <sub>The recipe set with the web page's keys (2200 rpm, ACL 2.0 s,
+  5.0 s), vacuum on, and the step run to the end: Act reaches 2198 rpm
+  (3x speed). Click for the full 47 s video.</sub>
 </p>
 
 Driving a **Midas SPIN-1200D** spin coater from a PC. The machine's
@@ -357,11 +358,39 @@ about 163. Both match what the LCD showed.
 | KW-525 USB-RS232 cable (Prolific PL-2303) | Serial port, `/dev/ttyUSB0` |
 | Logitech C920 webcam | Records the LCD and buttons, `/dev/video0` |
 | DB9 screw-terminal adapter | Joins the cable to the JP4 wires |
+| DB9 dual bracket (3D-printed) | Holds the DB9 joints beside the front panel |
 
 The webcam view used for every recording:
 
 <img src="docs/media/images/webcam_view_keypad_buttons.jpg" width="560"
      alt="Webcam view of the keypad board with the LCD and all ten buttons in frame">
+
+### DB9 bracket
+
+Setup B has two DB9 joints: each KW-525 cable plugs into a
+screw-terminal adapter that holds the JP4 wires. The user designed a
+holder that keeps both joints tidy and upright against the right side
+of the case, beside the front panel. The JP4 wires come out of the
+side vents into the top of the holder, and the KW-525 cables leave
+from the bottom.
+
+<p align="center">
+  <img src="docs/media/images/db9_brackets_on_machine.jpg" width="400"
+       alt="Orange printed brackets holding the DB9 joints on the right side of the coater, wires entering from the side vents">
+</p>
+
+![Three views of DB9_dual_bracket_v1: an open box with two pockets, each with a U-shaped slot in the floor](docs/media/images/db9_bracket_views.png)
+
+| Item | Value |
+|---|---|
+| CAD file | [hardware/DB9_dual_bracket_v1.step](hardware/DB9_dual_bracket_v1.step) (STEP AP214, Autodesk export, mm) |
+| Overall size | 78.2 x 27.4 x 54.5 mm |
+| Pockets | two, side by side, open at the top and back |
+| Cable slots | one U-shaped notch per pocket floor, open to the back, 14.6 mm wide |
+| Volume | 30.9 cm^3 of material |
+
+Size, slot width and volume were read from the STEP file with
+OpenCascade; the views above are rendered from the same file.
 
 ### DB9 pins
 
@@ -748,6 +777,7 @@ keypad    /dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_B
 | [docs/jp4_voltage_measurement.md](docs/jp4_voltage_measurement.md) | Multimeter readings on JP4 |
 | [docs/front_panel_operation.md](docs/front_panel_operation.md) | Panel keys, editing, deleting steps |
 | [docs/media/index.md](docs/media/index.md) | Every recorded video and still, with times |
+| [hardware/](hardware/) | CAD for printed parts (DB9 dual bracket) |
 | [claude_test/README.md](claude_test/README.md) | Index of capture tools and sessions |
 | [ToDo.md](ToDo.md) | Task history |
 

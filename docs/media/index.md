@@ -22,6 +22,8 @@ not committed; the copies here are H.264 re-encodes (CRF 28, 720p,
 | [videos/20261117_0915_white_vacuum_reading.mp4](videos/20261117_0915_white_vacuum_reading.mp4) | 2 min 7 s | Listening on White: three VACUUM cycles; LCD `Vac -163` matches the mainboard's vacuum field. | `sessions/20261117_091549_phaseB_white_idle_vacuum/` |
 | [videos/20261117_0927_run_5steps_white.mp4](videos/20261117_0927_run_5steps_white.mp4) | 2 min 42 s | First run: step 1 at 1234 rpm then steps 2-5 by accident; listening on White. | `sessions/20261117_092708_step5_run_white/` |
 | [videos/20261117_0937_run_1step_blue.mp4](videos/20261117_0937_run_1step_blue.mp4) | 1 min 6 s | One-step run (1234 rpm, 5 s, ACL 5 s), listening on Blue: the keypad's commanded speed ramps 24 -> 1234. | `sessions/20261117_093707_step5_run_blue_1step/` |
+| [videos/20261118_1638_web_control_demo.mp4](videos/20261118_1638_web_control_demo.mp4) | 40 s | Phone video by the user (2026-11-18): a 2200 rpm, ACL 5.0 s, 10 s step started from the web page; the page shows Set 1540 / Act 1444 rpm during the ramp, then the chuck stops. H.264 720p copy of `docs/KakaoTalk_20261118_163849760.mp4` (1080p HEVC, which not every browser plays). | none (server run without `--log`) |
+| [videos/20261118_1638_web_control_demo.gif](videos/20261118_1638_web_control_demo.gif) | 16 s (2.5x) | Same video at 480 px for the top of the README. | as above |
 
 ## Images
 

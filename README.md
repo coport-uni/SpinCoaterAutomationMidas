@@ -1,9 +1,20 @@
 # SpinCoaterAutomationMidas
 
+<p align="center">
+  <a href="docs/media/videos/20261118_1638_web_control_demo.mp4">
+    <img src="docs/media/videos/20261118_1638_web_control_demo.gif" width="480"
+         alt="The coater spinning at 2200 rpm while the laptop shows the web control page with Set and Act rising">
+  </a>
+  <br>
+  <sub>A 2200 rpm, ACL 5 s, 10 s step started from the web page (2.5x
+  speed). Click for the full 40 s video.</sub>
+</p>
+
 Driving a **Midas SPIN-1200D** spin coater from a PC. The machine's
 front-panel keypad talks to its mainboard over a four-wire serial link;
-this project listens to that link, has decoded what both sides say,
-and is now putting a PC in the middle so a script can run the coater.
+this project has decoded what both sides say and puts a PC in the
+middle, so the coater runs from a terminal or a web page while the
+keypad keeps working.
 
 <p align="center">
   <img src="docs/front_panel_buttons.jpg" width="720"

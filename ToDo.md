@@ -634,7 +634,12 @@ Set/time/ACL/V/state come from its own memory. Issue #10.
     `docs/jp4_protocol.md`.
 - [x] Round 1 and round 2 (to vac_301) analysed and recorded in
       `docs/jp4_protocol.md`, `docs/front_panel_operation.md`, README
-- [ ] Decide next with the user: probe other frame shapes (software,
+- [x] Decide next with the user: probe other frame shapes (software,
       may touch recipe memory) or press keypad buttons from the PC
-      (hardware)
+      (hardware) (user chose software, "1번으로 진행해보자")
+- [x] Round 3, other frame shapes (`sessions/20261118_000252_keypad_display_round3/`): the keypad reads any
+      12-character body as a status frame (`C21000000000` showed
+      `Vac -300`, G-Z showed -016 to -035), drops bad checksums, and
+      nothing changed Set, times, ACL, step or state; recipe A unchanged.
+      Forwarding was stopped for the probe and restarted afterwards.
 - [ ] PR for this branch once the exploration ends

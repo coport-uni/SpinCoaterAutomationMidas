@@ -216,6 +216,29 @@ the keypad itself stayed in STANDBY with its vacuum flag off throughout
 - Readings 400, 500, 1000 and 1500 of round 2 were not reached (the
   run was stopped at 400).
 
+Round 3 (2026-11-18, 00:02-00:04,
+`claude_test/rs232_probe/sessions/20261118_000252_keypad_display_round3/`) tried other frame shapes,
+3 s each:
+
+| Frame to the keypad | LCD |
+|---|---|
+| Valid vacuum-643 body with a wrong checksum | `Vac -000` (previous value kept): bad checksums are dropped |
+| All-zero bodies of 8, 11, 13 and 16 characters | `Vac -000`; inconclusive, because a zero body reads as 0 anyway |
+| The keypad's own shape, `C21000000000` | `Vac -300`: read as a status frame, `C`=12, `2`=2, `1`=1, low first |
+| `G00000000000` ... `Z00000000000` | `Vac -016` ... `Vac -035` |
+
+- The keypad reads every 12-character body as a status frame and
+  decodes each character as `char - 'A' + 10` above `9`, without a
+  range check (`G`=16 ... `Z`=35). A leading letter is not a message
+  type.
+- Nothing changed Set, times, ACL, step, recipe or state; the recipe
+  read `Stp01/01`, `Set 005.0 1234rpm`, `ACL05.0sec` before and after.
+- The keypad kept polling at the same rate for every reply, even with a
+  bad checksum, and its frames stayed `C2100000000056` throughout.
+
+Within the frame format seen so far, the host can change only `Vac`
+and the `V` mark on the keypad, and `Act` while the keypad is in RUN.
+
 ## Measurement plan
 
 The goal is to map every field and command letter, in both directions,

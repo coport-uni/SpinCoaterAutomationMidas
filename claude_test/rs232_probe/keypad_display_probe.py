@@ -71,6 +71,27 @@ def round_two():
     return steps
 
 
+def round_three():
+    # Other frame shapes. A bytes entry is sent as is (bad checksum).
+    good = status_body(vacuum=643)
+    bad_checksum = (
+        bytes([jp4.stx]) + (good + "00").encode("ascii") + bytes([jp4.etx])
+    )
+    steps = [
+        ("baseline", status_body()),
+        ("bad_checksum", bad_checksum),
+        ("length_8", "0" * 8),
+        ("length_11", "0" * 11),
+        ("length_13", "0" * 13),
+        ("length_16", "0" * 16),
+        ("keypad_shape", "C21000000000"),
+    ]
+    for letter in "GHIJKLMNOPQRSTUVWXYZ":
+        steps.append((f"letter_{letter}", letter + "0" * 11))
+    steps.append(("baseline_end", status_body()))
+    return steps
+
+
 class Camera(threading.Thread):
     """Keep the newest webcam frame so a snapshot is never stale."""
 
@@ -120,7 +141,7 @@ def main():
     parser.add_argument("--step-seconds", type=float, default=4.0)
     parser.add_argument("--camera", default="/dev/video0")
     args = parser.parse_args()
-    steps = {1: round_one, 2: round_two}[args.round]()
+    steps = {1: round_one, 2: round_two, 3: round_three}[args.round]()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
 
@@ -147,8 +168,13 @@ def main():
     keypad_bodies = set()
     try:
         for number, (name, body) in enumerate(steps):
-            reply = jp4.wrap_frame(body)
+            if isinstance(body, bytes):
+                reply = body
+                body = body[1:-1].decode("ascii")
+            else:
+                reply = jp4.wrap_frame(body)
             record("step", f"{name} {body}")
+            step_bodies = set()
             print(
                 f"{datetime.datetime.now():%H:%M:%S} step {number:02d} "
                 f"{name:18s} to keypad {body}",
@@ -161,6 +187,7 @@ def main():
                     text = frame.decode("ascii", "replace")
                     record("keypad_rx", text)
                     keypad_bodies.add(text)
+                    step_bodies.add(text)
                     keypad.send(reply)
                     mainboard.send(safe_mainboard_frame)
                     polls += 1
@@ -172,6 +199,7 @@ def main():
             )
             thumbs.append(cv2.resize(image, (640, 360)))
             record("step_end", f"{name} polls={polls}")
+            print(f"    polls {polls}, keypad sent {sorted(step_bodies)}")
     finally:
         camera.stop()
         log_file.close()

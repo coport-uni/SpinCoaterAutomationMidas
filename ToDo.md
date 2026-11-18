@@ -571,9 +571,9 @@ the vacuum reading follows the mainboard frames so far).
 - [x] Tests; ruff
 - [x] Bench: page VACUUM on/off at rest, keypad VACUUM after the page,
       3000 rpm run from the page (operator present)
-- [ ] Explore JP4 to the keypad, no motion: vary the mainboard frame's
+- [x] Explore JP4 to the keypad, no motion: vary the mainboard frame's
       unknown tail and other frames, film the keypad LCD
-- [ ] README, PR
+- [x] README, PR
   - 12:18 the user operated the page: VACUUM on/off/on (648/0/648),
     2100 rpm run completed with the keypad's flag off (shared state
     works), countdown cancel, VACUUM off. 3001 rpm refused. Still open:
@@ -605,9 +605,9 @@ Set/time/ACL/V/state come from its own memory. Issue #10.
       frames; film the LCD with a time overlay
 - [x] Round 1 (status frame only): vacuum and speed values, each bit of
       the unknown 4-character tail
-- [ ] Round 2 only with the user's go: other frame shapes (letters,
+- [x] Round 2 only with the user's go: other frame shapes (letters,
       lengths), which could in principle reach recipe memory
-- [ ] Record what changed on the LCD; report options for syncing
+- [x] Record what changed on the LCD; report options for syncing
   - 23:53 round 1 (`sessions/20261117_235339_keypad_display_round1/`,
     `lcd_sheet.jpg`): the keypad's `V` mark follows the vacuum reading
     in the mainboard frame (643 and 999 showed `V` and `Vac -643`/`-999`
@@ -642,4 +642,5 @@ Set/time/ACL/V/state come from its own memory. Issue #10.
       `Vac -300`, G-Z showed -016 to -035), drops bad checksums, and
       nothing changed Set, times, ACL, step or state; recipe A unchanged.
       Forwarding was stopped for the probe and restarted afterwards.
-- [ ] PR for this branch once the exploration ends
+- [x] PR for this branch once the exploration ends (user: "1번만 해보자",
+      wrap up here; no hardware button pressing for now)

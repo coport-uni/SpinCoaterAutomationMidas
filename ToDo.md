@@ -654,7 +654,7 @@ User request (2026-11-17): "software 섹션을 가장 위로 올려줘".
 - [x] Move `## Software` (with its "Wiring B bridge" part) to be the
       first section after the contents list; renumber the contents
 - [x] Check every heading, contents link and relative link still works
-- [ ] Commit, PR
+- [x] Commit, PR (PR #9, merged 2026-11-18)
   - Contents order matches the headings, no broken anchors or file
     links. Fixed one stale "abort tests below" (the table is now above,
     under Wiring B bridge). Added a two-line pointer to wiring B and the

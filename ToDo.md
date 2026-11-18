@@ -644,3 +644,22 @@ Set/time/ACL/V/state come from its own memory. Issue #10.
       Forwarding was stopped for the probe and restarted afterwards.
 - [x] PR for this branch once the exploration ends (user: "1번만 해보자",
       wrap up here; no hardware button pressing for now)
+
+## README: Software section first
+
+### Background
+User request (2026-11-17): "software 섹션을 가장 위로 올려줘".
+
+### Tasks
+- [x] Move `## Software` (with its "Wiring B bridge" part) to be the
+      first section after the contents list; renumber the contents
+- [x] Check every heading, contents link and relative link still works
+- [ ] Commit, PR
+  - Contents order matches the headings, no broken anchors or file
+    links. Fixed one stale "abort tests below" (the table is now above,
+    under Wiring B bridge). Added a two-line pointer to wiring B and the
+    start order, and `claude_test/web_gui/` to the file list.
+  - 2026-11-18, user: "반영하고 정리해줘" (PR #9 had gone stale while
+    main's README changed). Merged main into the branch, took main's
+    README and moved Software again; this section was appended here
+    from the branch.

@@ -17,20 +17,123 @@ fit together. Every number below comes from a recording on the bench
 
 ## Contents
 
-1. [Status](#status)
-2. [The machine in one picture](#the-machine-in-one-picture)
-3. [Using the coater by hand](#using-the-coater-by-hand)
-4. [Inside the keypad](#inside-the-keypad)
-5. [The JP4 link](#the-jp4-link)
-6. [What happens during a run](#what-happens-during-a-run)
-7. [Bench setup](#bench-setup)
-8. [Software](#software)
+1. [Software](#software)
+2. [Status](#status)
+3. [The machine in one picture](#the-machine-in-one-picture)
+4. [Using the coater by hand](#using-the-coater-by-hand)
+5. [Inside the keypad](#inside-the-keypad)
+6. [The JP4 link](#the-jp4-link)
+7. [What happens during a run](#what-happens-during-a-run)
+8. [Bench setup](#bench-setup)
 9. [Web control](#web-control)
 10. [Example terminal session](#example-terminal-session)
 11. [Safety rules](#safety-rules)
 12. [Open questions](#open-questions)
 13. [Glossary](#glossary)
 14. [Where to find things](#where-to-find-things)
+
+## Software
+
+The PC sits between the keypad and the mainboard ("wiring B", see
+[Bench setup](#bench-setup)). The
+[Example terminal session](#example-terminal-session) shows the start
+order step by step.
+
+```
+spincoater_midas/jp4_protocol.py   frame parser and builder (both directions)
+spincoater_midas/bridge.py         wiring B: listen, forward, run one step
+spincoater_midas/profile.py        speed ramp for one step, as the keypad makes it
+spincoater_midas/server.py         web page + REST API on top of the bridge
+spincoater_midas/web/index.html    the page: a copy of the machine's front panel
+tests/                             pytest suite; fixtures are recorded frames
+claude_test/rs232_probe/           capture tools and every recording session
+claude_test/readme_figures/        script that draws the figures in this README
+claude_test/web_gui/               browser scripts that operated the web page on the bench
+docs/                              protocol notes, measurements, photos, media
+```
+
+Run the tests:
+
+```sh
+python3 -m pytest
+```
+
+Decode frames in Python:
+
+```python
+from spincoater_midas import jp4_protocol as jp4
+
+jp4.parse_keypad_frame("C2102D40300073")
+# KeypadCommand(speed_rpm=1234, vacuum=True, run=True, ...)
+
+jp4.parse_mainboard_frame("38200D40000065")
+# MainboardStatus(vacuum_reading=643, speed_rpm=1232, tail='0000')
+
+jp4.build_keypad_frame(jp4.KeypadCommand(speed_rpm=1234, vacuum=True, run=True))
+# b'\x02C2102D40300073\x03'
+```
+
+A frame from the keypad also parses as a mainboard frame (both are
+twelve hex-looking characters), so always parse by the wire it came
+from.
+
+Record a session (listen-only; frames, changes, webcam video with a
+clock overlay):
+
+```sh
+python3 claude_test/rs232_probe/capture_session.py --seconds 300 --label my_test
+```
+
+### Wiring B bridge
+
+```sh
+B="python3 -m spincoater_midas.bridge"
+$B identify                                   # which cable faces which board
+K=/dev/serial/by-id/...   M=/dev/serial/by-id/...
+$B --keypad-port $K --mainboard-port $M listen --seconds 30    # writes nothing
+$B --keypad-port $K --mainboard-port $M forward --seconds 600  # panel works as before
+$B --keypad-port $K --mainboard-port $M --log run.csv \
+   run --rpm 2100 --accel 5 --hold 10 --yes                    # operator present
+```
+
+`run` keeps forwarding until the vacuum is on (switched at the
+keypad), the spindle is still and the vacuum reading is at least 400
+(a substrate is held),
+counts down 3 s, then drives the step. It stops the spindle (speed 0,
+run off, vacuum kept on) when the step ends or as soon as:
+
+- a key changes the keypad frame (START/STOP and VACUUM do),
+- the keypad or the mainboard sends nothing for 0.5 s,
+- the vacuum reading falls below `--min-vacuum` (default 400),
+- the operator presses Ctrl+C.
+
+`--start-vacuum` sets the reading needed to start, if it should be
+higher than the stop limit. After a run, the bridge holds the spindle
+at 0 rpm until the keypad is idle, so a keypad recipe started during
+the run does not take over.
+
+Mainboard frames keep reaching the keypad during a run, but the keypad
+does not know the PC is running, so its LCD stays on STANDBY with
+`Act 0rpm`; only the vacuum value follows. Watch the speed on the PC.
+
+Bench results on 2026-11-17 (logs in
+`claude_test/rs232_probe/sessions/`):
+
+| Test | Result |
+|---|---|
+| `forward`, 30 s, STANDBY | 394 frames each way, 0 bad; LCD normal |
+| `forward`, keypad runs 1234 rpm, ACL 5 s, 5 s | Ramp 4.91 s, hold 1230-1234 rpm, stop 0.41 s; same as without the PC |
+| `run --rpm 2100 --accel 5 --hold 10` | Command at 2100 rpm after 4.94 s; measured 2098 rpm mean (2097-2099) for 9.96 s; 0 rpm 0.49 s after the step; vacuum 640-645; 0 bad frames |
+| Abort: START/STOP pressed at 500 rpm | Stop frame in the same poll; 493 to 31 rpm in 0.25 s; spindle held at 0 rpm while the keypad's own recipe ran |
+| Abort: keypad-side DB9 pulled at 500 rpm | Detected 0.50 s after the last frame; 0 rpm 0.30 s later |
+| Abort: vacuum below the limit (`--min-vacuum 643`) | Stopped in the same poll as a 642 reading (194 rpm) |
+| Abort: mainboard-side DB9 pulled at 300 rpm | Detected after 0.5 s; the mainboard stopped the spindle by itself, vacuum held |
+| PC down: bridge killed at 300 rpm | Mainboard stopped the spindle by itself, vacuum held |
+
+With the PC forwarding, the keypad polls about 14 times a second
+instead of 19, because each reply takes about 42 ms through the PC.
+The keypad's own ramp is timed by the clock, so recipes still run to
+time.
 
 ## Status
 
@@ -276,103 +379,6 @@ the mainboard instead.
 
 ![Wiring B: two KW-525 cables put the PC between keypad and mainboard](docs/diagrams/wiring_b.png)
 
-## Software
-
-```
-spincoater_midas/jp4_protocol.py   frame parser and builder (both directions)
-spincoater_midas/bridge.py         wiring B: listen, forward, run one step
-spincoater_midas/profile.py        speed ramp for one step, as the keypad makes it
-spincoater_midas/server.py         web page + REST API on top of the bridge
-spincoater_midas/web/index.html    the page: a copy of the machine's front panel
-tests/                             pytest suite; fixtures are recorded frames
-claude_test/rs232_probe/           capture tools and every recording session
-claude_test/readme_figures/        script that draws the figures in this README
-docs/                              protocol notes, measurements, photos, media
-```
-
-Run the tests:
-
-```sh
-python3 -m pytest
-```
-
-Decode frames in Python:
-
-```python
-from spincoater_midas import jp4_protocol as jp4
-
-jp4.parse_keypad_frame("C2102D40300073")
-# KeypadCommand(speed_rpm=1234, vacuum=True, run=True, ...)
-
-jp4.parse_mainboard_frame("38200D40000065")
-# MainboardStatus(vacuum_reading=643, speed_rpm=1232, tail='0000')
-
-jp4.build_keypad_frame(jp4.KeypadCommand(speed_rpm=1234, vacuum=True, run=True))
-# b'\x02C2102D40300073\x03'
-```
-
-A frame from the keypad also parses as a mainboard frame (both are
-twelve hex-looking characters), so always parse by the wire it came
-from.
-
-Record a session (listen-only; frames, changes, webcam video with a
-clock overlay):
-
-```sh
-python3 claude_test/rs232_probe/capture_session.py --seconds 300 --label my_test
-```
-
-### Wiring B bridge
-
-```sh
-B="python3 -m spincoater_midas.bridge"
-$B identify                                   # which cable faces which board
-K=/dev/serial/by-id/...   M=/dev/serial/by-id/...
-$B --keypad-port $K --mainboard-port $M listen --seconds 30    # writes nothing
-$B --keypad-port $K --mainboard-port $M forward --seconds 600  # panel works as before
-$B --keypad-port $K --mainboard-port $M --log run.csv \
-   run --rpm 2100 --accel 5 --hold 10 --yes                    # operator present
-```
-
-`run` keeps forwarding until the vacuum is on (switched at the
-keypad), the spindle is still and the vacuum reading is at least 400
-(a substrate is held),
-counts down 3 s, then drives the step. It stops the spindle (speed 0,
-run off, vacuum kept on) when the step ends or as soon as:
-
-- a key changes the keypad frame (START/STOP and VACUUM do),
-- the keypad or the mainboard sends nothing for 0.5 s,
-- the vacuum reading falls below `--min-vacuum` (default 400),
-- the operator presses Ctrl+C.
-
-`--start-vacuum` sets the reading needed to start, if it should be
-higher than the stop limit. After a run, the bridge holds the spindle
-at 0 rpm until the keypad is idle, so a keypad recipe started during
-the run does not take over.
-
-Mainboard frames keep reaching the keypad during a run, but the keypad
-does not know the PC is running, so its LCD stays on STANDBY with
-`Act 0rpm`; only the vacuum value follows. Watch the speed on the PC.
-
-Bench results on 2026-11-17 (logs in
-`claude_test/rs232_probe/sessions/`):
-
-| Test | Result |
-|---|---|
-| `forward`, 30 s, STANDBY | 394 frames each way, 0 bad; LCD normal |
-| `forward`, keypad runs 1234 rpm, ACL 5 s, 5 s | Ramp 4.91 s, hold 1230-1234 rpm, stop 0.41 s; same as without the PC |
-| `run --rpm 2100 --accel 5 --hold 10` | Command at 2100 rpm after 4.94 s; measured 2098 rpm mean (2097-2099) for 9.96 s; 0 rpm 0.49 s after the step; vacuum 640-645; 0 bad frames |
-| Abort: START/STOP pressed at 500 rpm | Stop frame in the same poll; 493 to 31 rpm in 0.25 s; spindle held at 0 rpm while the keypad's own recipe ran |
-| Abort: keypad-side DB9 pulled at 500 rpm | Detected 0.50 s after the last frame; 0 rpm 0.30 s later |
-| Abort: vacuum below the limit (`--min-vacuum 643`) | Stopped in the same poll as a 642 reading (194 rpm) |
-| Abort: mainboard-side DB9 pulled at 300 rpm | Detected after 0.5 s; the mainboard stopped the spindle by itself, vacuum held |
-| PC down: bridge killed at 300 rpm | Mainboard stopped the spindle by itself, vacuum held |
-
-With the PC forwarding, the keypad polls about 14 times a second
-instead of 19, because each reply takes about 42 ms through the PC.
-The keypad's own ramp is timed by the clock, so recipes still run to
-time.
-
 ## Web control
 
 `spincoater_midas.server` keeps the bridge running in a background
@@ -589,7 +595,7 @@ lid, and keep the e-stop in reach. Start the command, then press
 the vacuum to hold a substrate, counts down 3 s, ramps to 2100 rpm in
 5 s, holds 10 s, and stops. A key press, a silent link or a vacuum
 drop during the run stops the spindle; each of these was tried on the
-machine (see the abort tests below).
+machine (see the abort tests under [Wiring B bridge](#wiring-b-bridge)).
 
 ```console
 $ python3 -m spincoater_midas.bridge --keypad-port $K --mainboard-port $M \

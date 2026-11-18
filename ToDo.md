@@ -684,3 +684,25 @@ stops.
     2.5x speed, 5.9 MB (a 640 px full-speed GIF was 20 MB). The original
     HEVC file is committed as uploaded in `docs/`, like the earlier
     KakaoTalk photos.
+
+## README: new demo video and the DB9 bracket
+
+### Background
+User request (2026-11-18): "영상을 KakaoTalk_20261118_173513543 이걸로
+바꾸고, 내가 DB9 커넥터들을 옆에 정돈할 수 있도록 마운트를 만들었어
+DB9_dual_bracket_v1 이것도 깃허브 문서에 반영되면 좋겠네".
+The new video (`docs/KakaoTalk_20261118_173513543.mp4`, 47 s, 1920x1080
+HEVC) shows the recipe set from the web page (2200 rpm, ACL 2.0 s,
+5.0 s) and a run that reaches Act 2198 rpm, with the orange DB9
+brackets on the side of the machine. The bracket is
+`docs/DB9_dual_bracket_v1.step` (Fusion 360 export, 78.2 x 27.4 x
+54.5 mm, two pockets with 14.6 mm U-slots).
+
+### Tasks
+- [x] H.264 copy and a GIF preview of the new video; swap them in at
+      the top of the README (the earlier demo stays in the media index)
+- [x] Move the STEP file to `hardware/`, render preview views, crop a
+      photo of the brackets on the machine from the video
+- [x] README: a bracket part in Bench setup; update the media index
+      and "Where to find things"
+- [ ] Check every link; commit, PR, merge

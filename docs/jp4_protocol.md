@@ -187,6 +187,35 @@ Evidence: `claude_test/rs232_probe/sweep_02_white.log` and
 | 5-8 | Speed in rpm (likely 4 hex nibbles, low first; 8 was always 0) |
 | 9-12 | Unknown, always `0` so far |
 
+## What the keypad shows from mainboard frames
+
+Probe of 2026-11-17 (23:53-23:56,
+`claude_test/rs232_probe/sessions/20261117_235339_keypad_display_round1/`
+and `..._235609_keypad_display_round2/`). The host answered each keypad
+poll with a crafted mainboard frame for 4 s and photographed the LCD;
+the mainboard got only a stop frame (speed 0, run off, vacuum off), and
+the keypad itself stayed in STANDBY with its vacuum flag off throughout
+(every keypad frame was `C2100000000056`).
+
+| Frame to the keypad | LCD |
+|---|---|
+| vacuum 1, 50, 100, 200, 299, 300 | `Vac -001` ... `Vac -300`, no `V` |
+| vacuum 301, 643, 999 | `Vac -301`, `-643`, `-999`, and `V` after `Stp01/01` |
+| vacuum 4095 | `Vac -000`, no `V` |
+| speed 1234, or vacuum 643 with speed 2100 | `Act 0rpm` (vacuum shown as above) |
+| each of the 16 bits of characters 9-12, and `FFFF` | no visible change |
+
+- The `V` mark is drawn from the vacuum reading, shown when it is above
+  300, not from the keypad's own VACUUM state. EDIT mode shows
+  `Vac -300`, probably this threshold.
+- In STANDBY the keypad ignores the speed field. It shows the measured
+  speed only in its own RUN state (bench runs earlier the same day).
+- Set speed, step time, ACL, step number, recipe letter and the
+  STANDBY/RUN/END state did not change in any probe: they come from the
+  keypad's own memory. Only other frame shapes remain untried.
+- Readings 400, 500, 1000 and 1500 of round 2 were not reached (the
+  run was stopped at 400).
+
 ## Measurement plan
 
 The goal is to map every field and command letter, in both directions,

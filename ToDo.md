@@ -679,7 +679,7 @@ stops.
 - [x] Animated preview at the very top of the README, linked to the
       video (GitHub does not play repo videos inline in a README)
 - [x] Update the intro and `docs/media/index.md`
-- [ ] Check every link; commit, PR, merge
+- [x] Check every link; commit, PR, merge
   - H.264 720p copy 5.8 MB (40 s, audio kept); GIF 480x270, 8 fps,
     2.5x speed, 5.9 MB (a 640 px full-speed GIF was 20 MB). The original
     HEVC file is committed as uploaded in `docs/`, like the earlier

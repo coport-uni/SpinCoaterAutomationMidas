@@ -187,6 +187,58 @@ Evidence: `claude_test/rs232_probe/sweep_02_white.log` and
 | 5-8 | Speed in rpm (likely 4 hex nibbles, low first; 8 was always 0) |
 | 9-12 | Unknown, always `0` so far |
 
+## What the keypad shows from mainboard frames
+
+Probe of 2026-11-17 (23:53-23:56,
+`claude_test/rs232_probe/sessions/20261117_235339_keypad_display_round1/`
+and `..._235609_keypad_display_round2/`). The host answered each keypad
+poll with a crafted mainboard frame for 4 s and photographed the LCD;
+the mainboard got only a stop frame (speed 0, run off, vacuum off), and
+the keypad itself stayed in STANDBY with its vacuum flag off throughout
+(every keypad frame was `C2100000000056`).
+
+| Frame to the keypad | LCD |
+|---|---|
+| vacuum 1, 50, 100, 200, 299, 300 | `Vac -001` ... `Vac -300`, no `V` |
+| vacuum 301, 643, 999 | `Vac -301`, `-643`, `-999`, and `V` after `Stp01/01` |
+| vacuum 4095 | `Vac -000`, no `V` |
+| speed 1234, or vacuum 643 with speed 2100 | `Act 0rpm` (vacuum shown as above) |
+| each of the 16 bits of characters 9-12, and `FFFF` | no visible change |
+
+- The `V` mark is drawn from the vacuum reading, shown when it is above
+  300, not from the keypad's own VACUUM state. EDIT mode shows
+  `Vac -300`, probably this threshold.
+- In STANDBY the keypad ignores the speed field. It shows the measured
+  speed only in its own RUN state (bench runs earlier the same day).
+- Set speed, step time, ACL, step number, recipe letter and the
+  STANDBY/RUN/END state did not change in any probe: they come from the
+  keypad's own memory. Only other frame shapes remain untried.
+- Readings 400, 500, 1000 and 1500 of round 2 were not reached (the
+  run was stopped at 400).
+
+Round 3 (2026-11-18, 00:02-00:04,
+`claude_test/rs232_probe/sessions/20261118_000252_keypad_display_round3/`) tried other frame shapes,
+3 s each:
+
+| Frame to the keypad | LCD |
+|---|---|
+| Valid vacuum-643 body with a wrong checksum | `Vac -000` (previous value kept): bad checksums are dropped |
+| All-zero bodies of 8, 11, 13 and 16 characters | `Vac -000`; inconclusive, because a zero body reads as 0 anyway |
+| The keypad's own shape, `C21000000000` | `Vac -300`: read as a status frame, `C`=12, `2`=2, `1`=1, low first |
+| `G00000000000` ... `Z00000000000` | `Vac -016` ... `Vac -035` |
+
+- The keypad reads every 12-character body as a status frame and
+  decodes each character as `char - 'A' + 10` above `9`, without a
+  range check (`G`=16 ... `Z`=35). A leading letter is not a message
+  type.
+- Nothing changed Set, times, ACL, step, recipe or state; the recipe
+  read `Stp01/01`, `Set 005.0 1234rpm`, `ACL05.0sec` before and after.
+- The keypad kept polling at the same rate for every reply, even with a
+  bad checksum, and its frames stayed `C2100000000056` throughout.
+
+Within the frame format seen so far, the host can change only `Vac`
+and the `V` mark on the keypad, and `Act` while the keypad is in RUN.
+
 ## Measurement plan
 
 The goal is to map every field and command letter, in both directions,

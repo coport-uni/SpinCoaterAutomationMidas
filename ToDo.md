@@ -551,6 +551,100 @@ User request (2026-11-17): "이 PC에서만 확인하는 것으로 하고 exampl
     use"); after Ctrl+C the ports were free; forward 3 s, 0 bad frames
     (`sessions/20261117_114805_start_order/`).
 
+## Web vacuum, 3000 rpm limit, keypad display
+
+### Background
+User request (2026-11-17): "1) RPM 리밋은 3000으로 올리고 2) 웹에서도
+vaccum을 킬 수 있도록해줘. 3) 웹에서 변동된 사항이 키패드에도
+반영되어 보이도록 구성해줘. 궁극적으로 이 장치의 자동화 구축이
+목표이니 이렇게 진행". Choices: 2) one shared vacuum state that both
+the page and the keypad toggle; 3) explore JP4 frames to the keypad
+first (the keypad draws Set/time/ACL/V/RUN from its own memory; only
+the vacuum reading follows the mainboard frames so far).
+
+### Tasks
+- [x] Default speed limit 3000 rpm (`--max-rpm` still overrides)
+- [x] Bridge owns the vacuum state: starts from the keypad's, every
+      keypad VACUUM press toggles it, the page sets it; forwarded
+      frames carry it; never off while the spindle turns
+- [x] `POST /api/vacuum`; page VACUUM key toggles it; LCD `V` follows
+- [x] Tests; ruff
+- [x] Bench: page VACUUM on/off at rest, keypad VACUUM after the page,
+      3000 rpm run from the page (operator present)
+- [x] Explore JP4 to the keypad, no motion: vary the mainboard frame's
+      unknown tail and other frames, film the keypad LCD
+- [x] README, PR
+  - 12:18 the user operated the page: VACUUM on/off/on (648/0/648),
+    2100 rpm run completed with the keypad's flag off (shared state
+    works), countdown cancel, VACUUM off. 3001 rpm refused. Still open:
+    keypad VACUUM toggling the shared state, and a 3000 rpm run.
+  - User (mid-task): explore the keypad display only after 1) and 2)
+    are verified, committed and merged.
+  - Operator (later, own server started without --log): "A,B 둘다 잘
+    되는 것 같네": keypad VACUUM toggled the shared state off after the
+    page switched it on (A), and a 3000 rpm run from the page ran (B).
+    No log of A or B; the operator server's /api/status showed the
+    3000/5/10 request accepted (limit 3000) and, in that instance, a
+    countdown cancel as the last result.
+- [x] README updated (3000 rpm limit, one vacuum state, start order,
+      safety rules)
+
+## Keypad display: can the PC change what the keypad shows?
+
+### Background
+User request (2026-11-17): after merging 1) and 2) (PR #11), "원래
+계획대로 키패드 화면도 PC 화면과 동기화할 수 있는지 탐색해보자".
+Known so far: the keypad shows the vacuum reading from mainboard frames;
+in STANDBY it shows Act 0 rpm even when the frame says 2100 rpm; its
+Set/time/ACL/V/state come from its own memory. Issue #10.
+
+### Tasks
+- [x] Probe tool in `claude_test/`: answer each keypad poll with a
+      crafted mainboard frame; send the mainboard only a safe frame
+      (speed 0, run off, vacuum off) so nothing can turn; log keypad
+      frames; film the LCD with a time overlay
+- [x] Round 1 (status frame only): vacuum and speed values, each bit of
+      the unknown 4-character tail
+- [x] Round 2 only with the user's go: other frame shapes (letters,
+      lengths), which could in principle reach recipe memory
+- [x] Record what changed on the LCD; report options for syncing
+  - 23:53 round 1 (`sessions/20261117_235339_keypad_display_round1/`,
+    `lcd_sheet.jpg`): the keypad's `V` mark follows the vacuum reading
+    in the mainboard frame (643 and 999 showed `V` and `Vac -643`/`-999`
+    with the keypad's own flag off; 0 showed no `V`). 4095 showed
+    `Vac -000` and no `V`. Speed 1234/2100 in STANDBY: `Act 0rpm`. All
+    16 tail bits and `FFFF`: no visible change. So the README note that
+    the keypad's `V` can disagree with a page change is wrong; fix it.
+  - 23:56 round 2 (vacuum 1-1500, where `V` switches on) was stopped by
+    the user after 8 of 14 steps (up to `vac_301`);
+    `sessions/20261117_235609_keypad_display_round2/` holds those
+    photos and `probe.csv`, not yet analysed. Waiting for the user.
+  - 23:57 user: "남은 프로세스가 있는지부터 확인하고 정리해줘". No probe,
+    bridge, server, ffmpeg or browser process left; no process holds
+    /dev/ttyUSB0-1 or /dev/video0-1; nothing on port 8000; `identify`
+    opens both cables (keypad / silent). Nothing to kill. The round-2
+    folder is kept as recorded. The mainboard's last command came from
+    the probe's safe frame (speed 0, run off, vacuum off).
+  - 23:58 user: "bridge forward 키고 계속 탐색해줘". `forward --seconds
+    3600` started (no log); the keypad works. Round 2 analysed from the
+    saved photos: `V` shows when the reported reading is above 300
+    (300: none, 301: `V`). Fixed the README note (the keypad's `V`
+    follows the real vacuum, so it does not disagree with the page);
+    added "What the keypad shows from mainboard frames" to
+    `docs/jp4_protocol.md`.
+- [x] Round 1 and round 2 (to vac_301) analysed and recorded in
+      `docs/jp4_protocol.md`, `docs/front_panel_operation.md`, README
+- [x] Decide next with the user: probe other frame shapes (software,
+      may touch recipe memory) or press keypad buttons from the PC
+      (hardware) (user chose software, "1번으로 진행해보자")
+- [x] Round 3, other frame shapes (`sessions/20261118_000252_keypad_display_round3/`): the keypad reads any
+      12-character body as a status frame (`C21000000000` showed
+      `Vac -300`, G-Z showed -016 to -035), drops bad checksums, and
+      nothing changed Set, times, ACL, step or state; recipe A unchanged.
+      Forwarding was stopped for the probe and restarted afterwards.
+- [x] PR for this branch once the exploration ends (user: "1번만 해보자",
+      wrap up here; no hardware button pressing for now)
+
 ## README: Software section first
 
 ### Background
@@ -565,3 +659,7 @@ User request (2026-11-17): "software 섹션을 가장 위로 올려줘".
     links. Fixed one stale "abort tests below" (the table is now above,
     under Wiring B bridge). Added a two-line pointer to wiring B and the
     start order, and `claude_test/web_gui/` to the file list.
+  - 2026-11-18, user: "반영하고 정리해줘" (PR #9 had gone stale while
+    main's README changed). Merged main into the branch, took main's
+    README and moved Software again; this section was appended here
+    from the branch.

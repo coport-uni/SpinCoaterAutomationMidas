@@ -663,3 +663,24 @@ User request (2026-11-17): "software 섹션을 가장 위로 올려줘".
     main's README changed). Merged main into the branch, took main's
     README and moved Software again; this section was appended here
     from the branch.
+
+## README: demo video at the top
+
+### Background
+User request (2026-11-18): "실제로 작동하는 영상도 추가했어. 이것도
+깃허브 readme 젤 앞에 탑재할 수 있음 좋겠네 KakaoTalk_20261118_163849760".
+The video (`docs/KakaoTalk_20261118_163849760.mp4`, 40 s, 1920x1080
+HEVC) shows a 2200 rpm, ACL 5.0 s, 10 s run started from the web page:
+the page reads Set 1540 / Act 1444 rpm during the ramp, then the chuck
+stops.
+
+### Tasks
+- [x] H.264 copy that browsers play, in `docs/media/videos/`
+- [x] Animated preview at the very top of the README, linked to the
+      video (GitHub does not play repo videos inline in a README)
+- [x] Update the intro and `docs/media/index.md`
+- [ ] Check every link; commit, PR, merge
+  - H.264 720p copy 5.8 MB (40 s, audio kept); GIF 480x270, 8 fps,
+    2.5x speed, 5.9 MB (a 640 px full-speed GIF was 20 MB). The original
+    HEVC file is committed as uploaded in `docs/`, like the earlier
+    KakaoTalk photos.

@@ -430,9 +430,10 @@ drop stops a run.
 and puts it into every frame it forwards to the mainboard. It starts
 from the keypad's state; the page's VACUUM key sets it, and each press
 of the machine's VACUUM key toggles it. The vacuum is never switched
-off while the spindle turns. The keypad's own `V` mark only follows
-its own key, so after a change from the page it can disagree with the
-real vacuum; the `Vac` reading on both screens is always the real one.
+off while the spindle turns. The keypad's LCD follows a change from
+the page too: its `V` mark and `Vac` value are drawn from the vacuum
+reading the mainboard reports (`V` shows above 300), not from the
+keypad's own key.
 
 
 Bench results on 2026-11-17, with the page operated by a headless

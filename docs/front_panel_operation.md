@@ -67,7 +67,9 @@ ACL00.0sec  Vac -000     acceleration time, vacuum reading
 - States seen: `STANDBY`, `EDIT`, `RUN`, `END`.
 - `V` appears next to the recipe letter while VACUUM is on.
 - In EDIT mode the Act line is blank and `Vac -300` is shown, probably
-  the vacuum threshold.
+  the vacuum threshold: in STANDBY the `V` mark appears when the
+  reported vacuum reading is above 300 (probe, 2026-11-17; see
+  `jp4_protocol.md`).
 - **Note on Act rpm:** during steps 2-5 of the first run (`Set 0000rpm`)
   the LCD showed `Act 0246rpm`, but the mainboard reported about
   1232 rpm and the operator saw the chuck keep spinning at a similar

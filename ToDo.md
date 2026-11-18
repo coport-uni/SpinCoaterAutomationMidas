@@ -705,4 +705,8 @@ brackets on the side of the machine. The bracket is
       photo of the brackets on the machine from the video
 - [x] README: a bracket part in Bench setup; update the media index
       and "Where to find things"
-- [ ] Check every link; commit, PR, merge
+- [x] Check every link; commit, PR, merge (PR #17)
+  - H.264 720p copy 7.1 MB (47 s, audio kept); GIF 480 px, 7 fps, 3x
+    speed, 5.8 MB (8 fps was 7.4 MB). STEP moved to
+    `hardware/DB9_dual_bracket_v1.step`; the measuring and rendering
+    scripts are in `claude_test/cad/` (cadquery-ocp in a scratch venv).
